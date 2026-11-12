@@ -1,0 +1,2747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Newton's Rings — Virtual Physics Lab</title>
+<style>
+  /* ============================================================
+   STUNNING PDF REPORT STYLES
+   ============================================================ */
+#reportOverlay {
+  background: #f8fafc; /* Very light slate background for print */
+  color: #0f172a;
+}
+#reportBody {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #ffffff;
+  box-shadow: 0 0 40px rgba(0,0,0,0.1);
+}
+#reportBody h1, #reportBody h2, #reportBody h3 {
+  color: #0f172a;
+  border-bottom: 2px solid #35e0c5;
+  padding-bottom: 6px;
+  margin-top: 28px;
+}
+#reportBody h1 { font-size: 24px; text-align: center; border: none; margin-bottom: 4px; }
+#reportBody .subh { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 24px; }
+
+/* Metadata grid */
+#reportBody .meta {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px 30px;
+  background: #f1f5f9; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;
+  font-size: 14px; margin-bottom: 24px;
+}
+#reportBody .meta b { color: #0f172a; }
+
+/* Abstract */
+#reportBody .abstract {
+  background: #eefdfb; border-left: 4px solid #35e0c5;
+  padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 14.5px; line-height: 1.6;
+  margin-bottom: 24px; color: #1e293b;
+}
+
+/* Tables */
+#reportBody table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  font-size: 13px; background: #fff;
+}
+#reportBody th, #reportBody td {
+  border: 1px solid #cbd5e1; padding: 8px 10px; text-align: center;
+}
+#reportBody th {
+  background: #0f172a; color: #fff; font-weight: 600;
+  text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;
+}
+#reportBody tbody tr:nth-child(even) { background: #f8fafc; }
+#reportBody tbody tr:hover { background: #eefdfb; }
+
+/* Equations */
+#reportBody .eq {
+  font-family: 'Merriweather', serif; font-style: italic;
+  background: #f8fafc; padding: 10px 16px; border-radius: 6px;
+  border-left: 3px solid #94a3b8; font-size: 14px; margin: 12px 0;
+}
+
+/* Results box */
+#reportBody .res-box {
+  border: 2px solid #35e0c5; background: #f0fdf9; padding: 20px;
+  border-radius: 10px; text-align: center; margin: 24px 0;
+  box-shadow: 0 4px 20px rgba(53, 224, 197, 0.15);
+}
+#reportBody .res-box .big {
+  font-size: 28px; font-weight: 800; color: #0f172a; margin-top: 8px;
+}
+#reportBody .res-box .err { font-size: 16px; color: #475569; }
+
+/* Print overrides */
+@media print {
+  body { background: #fff; }
+  #reportBody { box-shadow: none; padding: 0; max-width: 100%; }
+  .rbar { display: none !important; }
+  #reportOverlay { background: #fff; }
+  #reportBody th { background: #0f172a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #reportBody .res-box, #reportBody .abstract, #reportBody .meta { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+:root{
+  --bg:#080d19; --panel:#0f1730; --panel2:#131d3a; --line:#24304e;
+  --txt:#e6ecfb; --mut:#8fa0c2; --acc:#35e0c5; --acc2:#ffc857;
+  --red:#ff6b7a; --ok:#5ee08a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(900px 500px at 15% -5%, #17356b 0%, transparent 60%),
+    radial-gradient(700px 500px at 100% 0%, #0e3b38 0%, transparent 55%),
+    var(--bg);
+  color:var(--txt); min-height:100vh; line-height:1.5;
+}
+h1,h2,h3,h4{margin:0 0 .4em;line-height:1.2}
+p{margin:.4em 0}
+a{color:var(--acc)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.muted{color:var(--mut)}
+.small{font-size:.82rem}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;flex-wrap:wrap;gap:14px;
+  align-items:center;justify-content:space-between;
+  padding:12px 22px;background:rgba(8,13,25,.82);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  font-size:1.3rem;background:linear-gradient(135deg,#1b3a6b,#0f5a52);
+  border:1px solid #2c4a7a;color:var(--acc);box-shadow:0 0 22px rgba(53,224,197,.25);
+}
+.brand h1{font-size:1.02rem;margin:0}
+.brand h1 span{color:var(--acc)}
+.brand p{margin:0;font-size:.75rem;color:var(--mut)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{
+  background:transparent;border:1px solid transparent;color:var(--mut);
+  padding:8px 14px;border-radius:10px;cursor:pointer;font-size:.86rem;font-weight:600;
+  transition:.18s;
+}
+.tabs button:hover{color:var(--txt);background:#16213c}
+.tabs button.active{color:#04120f;background:linear-gradient(135deg,var(--acc),#7ff3dd);border-color:transparent}
+
+/* ---------- layout ---------- */
+main{max-width:1180px;margin:0 auto;padding:26px 20px 70px}
+.page{display:none;animation:fade .3s ease}
+.page.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{
+  background:linear-gradient(180deg,var(--panel),#0c142a);
+  border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:880px){.grid2,.grid3{grid-template-columns:1fr}}
+.hide{display:none !important}
+
+/* ---------- hero ---------- */
+.hero{padding:54px 20px 30px;text-align:center}
+.hero .eyebrow{
+  display:inline-block;padding:6px 14px;border-radius:999px;font-size:.75rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--acc);border:1px solid #1e5a52;background:#0a2320;margin-bottom:16px;
+}
+.hero h2{font-size:clamp(1.9rem,4.4vw,3.1rem);letter-spacing:-.02em}
+.hero h2 em{font-style:normal;background:linear-gradient(120deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:680px;margin:14px auto;color:var(--mut)}
+.feat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:26px}
+@media(max-width:880px){.feat{grid-template-columns:1fr 1fr}}
+.feat div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:left}
+.feat b{display:block;color:var(--acc);font-size:.9rem;margin-bottom:4px}
+.feat span{font-size:.82rem;color:var(--mut)}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  background:#17233f;color:var(--txt);border:1px solid var(--line);
+  padding:10px 16px;border-radius:11px;font-size:.88rem;font-weight:600;
+  transition:.16s;font-family:inherit;
+}
+.btn:hover{background:#1e2c4e;border-color:#3a4d78}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,var(--acc),#63f0d8);color:#04120f;border-color:transparent}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.gold{background:linear-gradient(135deg,var(--acc2),#ffb02e);color:#1c1200;border-color:transparent}
+.btn.sm{padding:5px 10px;font-size:.78rem;border-radius:8px}
+.btn.danger{color:var(--red);border-color:#4a2230}
+
+/* ---------- stepper ---------- */
+.stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.sdot{
+  flex:1;min-width:130px;background:var(--panel);border:1px solid var(--line);
+  color:var(--mut);padding:10px 12px;border-radius:11px;cursor:pointer;
+  font-size:.8rem;font-weight:700;text-align:left;transition:.16s;font-family:inherit;
+}
+.sdot:hover{border-color:#3a4d78;color:var(--txt)}
+.sdot.active{background:linear-gradient(135deg,#103d38,#0d2a45);border-color:var(--acc);color:var(--acc)}
+.sdot.done{border-color:#245c46;color:var(--ok)}
+
+/* ---------- prep list ---------- */
+.prep{
+  display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:11px;
+  background:#0c142a;border:1px solid var(--line);margin-bottom:9px;font-size:.9rem;
+}
+.prep .tick{
+  width:24px;height:24px;border-radius:50%;display:grid;place-items:center;flex:none;
+  border:1.5px solid #33436b;color:var(--mut);font-size:.8rem;
+}
+.prep.done{border-color:#245c46;background:#0a1f1a}
+.prep.done .tick{background:var(--ok);border-color:var(--ok);color:#04120f;font-weight:800}
+.prep span.txt{flex:1}
+
+/* ---------- microscope ---------- */
+.scope{
+  position:relative;border-radius:14px;overflow:hidden;border:1px solid #2a3a5e;
+  background:#000;box-shadow:inset 0 0 60px rgba(0,0,0,.9), 0 0 30px rgba(53,224,197,.08);
+}
+.scope canvas{display:block;width:100%;height:auto}
+.scope::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:14px;
+  background:radial-gradient(circle at 50% 50%, transparent 55%, rgba(0,0,0,.75) 100%);
+}
+.scope .lbl{
+  position:absolute;top:8px;left:12px;font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;color:#7ff3dd;opacity:.85;z-index:2;
+}
+.mini{margin-top:10px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#000;position:relative}
+.mini canvas{display:block;width:100%;height:auto}
+.mini .lbl{position:absolute;top:5px;left:9px;font-size:.62rem;color:#8fa0c2;letter-spacing:.1em;text-transform:uppercase}
+
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+input[type=range]{width:100%;accent-color:var(--acc);height:26px}
+.readout{
+  display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+  background:#0a1224;border:1px solid var(--line);border-radius:10px;
+  padding:9px 13px;font-size:.86rem;margin-top:8px;
+}
+.readout b{color:var(--acc);font-size:1rem}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
+th{color:var(--mut);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.06em}
+tbody tr:hover{background:#101a33}
+td .sub{display:block;font-size:.68rem;color:var(--mut);margin-top:2px}
+.cap{
+  background:#16233f;border:1px dashed #3d5486;color:#9ec1ff;font-size:.72rem;
+  padding:4px 10px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:600;
+}
+.cap:hover{background:#1e3160;border-color:var(--acc);color:var(--acc)}
+.tblwrap{overflow-x:auto}
+
+/* ---------- results ---------- */
+.result{
+  background:linear-gradient(135deg,#0d2c27,#0d2138);border:1px solid #1d6b5c;
+  border-radius:14px;padding:18px;margin-top:14px;
+}
+.result .big{font-size:1.9rem;font-weight:800;color:var(--acc);letter-spacing:-.02em}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed #1e3552;font-size:.88rem}
+.kv:last-child{border:none}
+.kv b{color:var(--acc2)}
+.formula{
+  background:#0a1224;border:1px solid var(--line);border-left:3px solid var(--acc);
+  border-radius:8px;padding:10px 14px;font-family:ui-monospace,monospace;font-size:.86rem;
+  color:#bfe9ff;overflow-x:auto;
+}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.05em}
+.badge.ok{background:#0d3327;color:var(--ok);border:1px solid #1d6b4c}
+.badge.warn{background:#33290d;color:var(--acc2);border:1px solid #6b571d}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,30px);
+  background:#12203c;border:1px solid var(--line);color:var(--txt);
+  padding:12px 20px;border-radius:12px;font-size:.86rem;opacity:0;pointer-events:none;
+  transition:.28s;z-index:200;max-width:90vw;text-align:center;box-shadow:0 18px 44px rgba(0,0,0,.55);
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.ok{border-color:#1d6b4c}
+.toast.err{border-color:#6b2536;color:#ffc2cb}
+
+<!-- ================= APPLICATIONS ================= -->
+<section id="page-apps" class="page">
+  <div class="card">
+    <h2>Applications Test</h2>
+    <p>If you can read this text, the tab is working perfectly!</p>
+  </div>
+</section>
+
+/* ---------- quiz ---------- */
+.q{background:#0c142a;border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:12px}
+.q h4{font-size:.95rem;margin-bottom:10px}
+.opt{display:block;padding:9px 12px;border-radius:9px;border:1px solid var(--line);margin-bottom:7px;cursor:pointer;font-size:.86rem;transition:.15s}
+.opt:hover{border-color:#3a4d78;background:#101c36}
+.opt.sel{border-color:var(--acc);background:#0c2b27}
+.opt.correct{border-color:var(--ok);background:#0d3327}
+.opt.wrong{border-color:var(--red);background:#33121b}
+
+/* ---------- report ---------- */
+#reportOverlay{
+  display:none;position:fixed;inset:0;z-index:500;background:#fff;color:#111;
+  overflow:auto;padding:0;
+}
+#reportOverlay{
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: #f8fafc;
+  color: #0f172a;
+  overflow: auto;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#reportOverlay.show{
+  display: block;
+  opacity: 1;
+}
+.rpage{max-width:820px;margin:0 auto;padding:34px 30px 60px;font-size:14px;color:#111}
+.rpage h1{font-size:19px;text-align:center;margin-bottom:2px}
+.rpage h2{font-size:15px;margin:22px 0 8px;border-bottom:2px solid #111;padding-bottom:3px}
+.rpage .subh{text-align:center;font-size:12.5px;color:#444;margin-bottom:14px}
+.rpage table{font-size:12.5px;color:#111}
+.rpage th,.rpage td{border:1px solid #999;padding:5px 8px}
+.rpage th{background:#eef1f6;color:#111}
+.rpage .meta{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:13px;margin:12px 0}
+.rpage .box{border:1px solid #999;padding:10px 12px;margin:10px 0;font-size:13px}
+.rpage .res{border:2px solid #111;padding:12px;text-align:center;font-size:15px;font-weight:700;margin-top:12px}
+.rpage ul{margin:6px 0 6px 18px;padding:0;font-size:13px}
+.rpage .eq{font-family:ui-monospace,monospace;font-size:13px}
+
+@media print{
+  body{background:#fff}
+  body > *:not(#reportOverlay){display:none !important}
+  #reportOverlay{position:static;display:block;overflow:visible}
+  .rbar{display:none !important}
+  .rpage{padding:0;max-width:100%}
+}
+</style>
+<style id="genz-fx">
+  /* ============================================================
+   3D APPLICATION VIEWERS
+   ============================================================ */
+.app-card {
+  cursor: crosshair;
+  overflow: hidden;
+}
+.scene-3d {
+  width: 100%;
+  height: 220px;
+  perspective: 1000px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #13254a 0%, #080d19 80%);
+  border-radius: 12px;
+  border: 1px solid #24304e;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8);
+}
+.obj-3d {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  transform-style: preserve-3d;
+  transition: transform 0.1s ease-out;
+}
+
+/* 3D Lens (Stacked rings) */
+.lens-layer {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.2);
+  background: radial-gradient(circle, rgba(53,224,197,0.1) 0%, transparent 70%);
+  box-shadow: 0 0 15px rgba(53,224,197,0.3);
+}
+.light-wave {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  left: -20px;
+  top: -20px;
+  border-radius: 50%;
+  border: 2px solid #ffc857;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  animation: pulseWave 2s infinite linear;
+}
+@keyframes pulseWave {
+  0% { transform: translateZ(40px) rotateX(45deg) scale(0.5); opacity: 1; }
+  100% { transform: translateZ(40px) rotateX(45deg) scale(1.5); opacity: 0; }
+}
+
+/* 3D Plates */
+.plate-3d {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  left: -10px;
+  top: -10px;
+  background: rgba(255,255,255,0.05);
+  border: 2px solid #5b8cff;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(91,140,255,0.2);
+  backdrop-filter: blur(2px);
+}
+.rings-3d {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  left: 10px;
+  top: 10px;
+  border-radius: 50%;
+  border: 2px solid #35e0c5;
+  box-shadow: 0 0 10px #35e0c5, inset 0 0 10px #35e0c5;
+  animation: ringGlow 3s infinite alternate;
+}
+@keyframes ringGlow {
+  0% { box-shadow: 0 0 10px #35e0c5, inset 0 0 10px #35e0c5; opacity: 0.5; }
+  100% { box-shadow: 0 0 30px #35e0c5, inset 0 0 30px #35e0c5; opacity: 1; }
+}
+
+/* 3D Liquid Droplet */
+.droplet-3d {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  left: 20px;
+  top: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ff6b7a, #a50021);
+  box-shadow: 0 0 20px rgba(255,107,122,0.5);
+  animation: floatDroplet 3s ease-in-out infinite;
+}
+@keyframes floatDroplet {
+  0%, 100% { transform: translateZ(15px) translateY(0); }
+  50% { transform: translateZ(15px) translateY(-5px); }
+}
+.lens-3d {
+  position: absolute;
+  width: 100px;
+  height: 40px;
+  left: 0;
+  top: 30px;
+  border-radius: 50% 50% 10% 10% / 100% 100% 10% 10%;
+  background: linear-gradient(180deg, rgba(53,224,197,0.4), rgba(53,224,197,0.05));
+  border: 2px solid rgba(53,224,197,0.8);
+  border-bottom: none;
+  backdrop-filter: blur(4px);
+}
+/* ============================================================
+   GEN-Z ANIMATION LAYER — v3 "out-of-boundary"
+   ============================================================ */
+
+/* ---------- Global: 3D perspective for tilt ---------- */
+body{
+  background-size: 300% 300% !important;
+  animation: bgShift 30s ease-in-out infinite;
+  perspective: 1200px;
+  overflow-x: hidden;
+}
+@keyframes bgShift{
+  0%  { background-position:   0%  50%; }
+  25% { background-position: 100%   0%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position:   0% 100%; }
+  100%{ background-position:   0%  50%; }
+}
+
+/* ---------- Canvas behind everything — orbs live here ---------- */
+#fx-canvas{
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+}
+main, .topbar{ position: relative; z-index: 1; }
+
+/* ---------- Cursor: 3-layer trail with spring easing ---------- */
+.cursor-glow, .cursor-ring, .cursor-dot{
+  position: fixed; pointer-events: none; z-index: 100;
+  border-radius: 50%; transform: translate(-50%,-50%);
+  will-change: transform;
+}
+.cursor-glow{
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(53,224,197,.18), transparent 65%);
+  filter: blur(30px); mix-blend-mode: screen;
+  transition: opacity .4s;
+}
+.cursor-ring{
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(53,224,197,.7);
+  transition: width .25s, height .25s, border-color .25s, opacity .3s;
+}
+.cursor-ring.hover{ width: 68px; height: 68px; border-color: #ffc857; }
+.cursor-dot{
+  width: 6px; height: 6px; background: #35e0c5;
+  box-shadow: 0 0 12px #35e0c5;
+}
+
+/* ---------- Page transition: old flies OUT, new flies IN ---------- */
+.page{ display:none; position: relative; }
+.page.active{
+  display:block;
+  animation: pageIn .7s cubic-bezier(.6,0,.2,1);
+}
+.page.exiting{
+  display:block !important;
+  position: absolute; inset: 0;
+  animation: pageOut .45s cubic-bezier(.6,0,.2,1) forwards;
+  pointer-events: none;
+}
+@keyframes pageIn{
+  0%  { opacity: 0; transform: translate3d(0, 60px, -120px) rotateX(8deg); filter: blur(14px); }
+  100%{ opacity: 1; transform: none; filter: none; }
+}
+@keyframes pageOut{
+  0%  { opacity: 1; transform: none; filter: none; }
+  100%{ opacity: 0; transform: translate3d(0, -60px, -120px) rotateX(-8deg); filter: blur(14px); }
+}
+
+/* ---------- Reveal: 3D slide-up with rotation, staggered ---------- */
+.page.active .card,
+.page.active .feat > div,
+.page.active .prep,
+.page.active .q,
+.page.active .kv,
+.page.active .result,
+.page.active #ringTableBody tr,
+.page.active #spheroTableBody tr{
+  opacity: 0;
+  transform: translate3d(0, 40px, -80px) rotateX(6deg);
+  animation: reveal3d .8s cubic-bezier(.2,.8,.2,1) forwards;
+}
+@keyframes reveal3d{
+  to{ opacity: 1; transform: none; }
+}
+.page.active .card:nth-child(1),
+.page.active .feat > div:nth-child(1),
+.page.active .prep:nth-child(1),
+.page.active #ringTableBody tr:nth-child(1),
+.page.active #spheroTableBody tr:nth-child(1){ animation-delay: .04s }
+.page.active .card:nth-child(2),
+.page.active .feat > div:nth-child(2),
+.page.active .prep:nth-child(2),
+.page.active #ringTableBody tr:nth-child(2),
+.page.active #spheroTableBody tr:nth-child(2){ animation-delay: .10s }
+.page.active .card:nth-child(3),
+.page.active .feat > div:nth-child(3),
+.page.active .prep:nth-child(3),
+.page.active #ringTableBody tr:nth-child(3),
+.page.active #spheroTableBody tr:nth-child(3){ animation-delay: .16s }
+.page.active .card:nth-child(4),
+.page.active .feat > div:nth-child(4),
+.page.active .prep:nth-child(4),
+.page.active #ringTableBody tr:nth-child(4),
+.page.active #spheroTableBody tr:nth-child(4){ animation-delay: .22s }
+.page.active .card:nth-child(5),
+.page.active .prep:nth-child(5),
+.page.active #ringTableBody tr:nth-child(5),
+.page.active #spheroTableBody tr:nth-child(5){ animation-delay: .28s }
+.page.active .card:nth-child(n+6),
+.page.active #ringTableBody tr:nth-child(n+6),
+.page.active #spheroTableBody tr:nth-child(n+6){ animation-delay: .34s }
+
+/* ---------- Cards: 3D tilt + spotlight on hover ---------- */
+.card{
+  position: relative; overflow: hidden;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1),
+              box-shadow .35s ease;
+  transform-style: preserve-3d;
+}
+.card::before{
+  content:""; position: absolute; inset: -1px;
+  border-radius: inherit; pointer-events: none;
+  background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%),
+              rgba(53,224,197,.12), transparent 40%);
+  opacity: 0; transition: opacity .3s;
+}
+.card:hover::before{ opacity: 1; }
+
+/* ---------- Buttons: 3D press, glow sweep, ripple ---------- */
+.btn{
+  position: relative; overflow: hidden;
+  transition: transform .25s cubic-bezier(.2,.8,.2,1),
+              box-shadow .3s ease,
+              letter-spacing .25s ease;
+  transform-style: preserve-3d;
+}
+.btn::after{
+  content:""; position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 30%,
+              rgba(255,255,255,.18) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform .7s cubic-bezier(.2,.8,.2,1);
+  pointer-events: none;
+}
+.btn:hover::after{ transform: translateX(100%); }
+.btn:hover{
+  transform: translateY(-3px) rotateX(4deg) scale(1.03);
+  letter-spacing: .3px;
+  box-shadow: 0 18px 40px rgba(53,224,197,.25),
+              0 0 0 1px rgba(53,224,197,.35) inset;
+}
+.btn:active{ transform: translateY(-1px) rotateX(0) scale(.96); }
+
+.btn.primary{
+  background: linear-gradient(120deg, #35e0c5, #5b8cff, #35e0c5);
+  background-size: 300% 300%;
+  animation: btnGradient 5s ease infinite;
+}
+@keyframes btnGradient{
+  0%,100%{ background-position:   0% 50%; }
+  50%    { background-position: 100% 50%; }
+}
+.btn.primary:hover{
+  box-shadow: 0 20px 48px rgba(53,224,197,.55),
+              0 0 40px rgba(53,224,197,.4),
+              0 0 0 1px rgba(53,224,197,.6) inset;
+}
+
+/* ---------- Tabs: active pill glow + slide ---------- */
+.tabs button{ transition: transform .25s, color .2s, background .25s; }
+.tabs button:hover{ transform: translateY(-2px); }
+.tabs button.active{
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(53,224,197,.45),
+              0 0 20px rgba(53,224,197,.3);
+}
+
+/* ---------- Stepper: light sweep + bounce ---------- */
+.sdot{ position: relative; overflow: hidden; }
+.sdot.active{
+  animation: stepBounce .8s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes stepBounce{
+  0%  { transform: scale(1); }
+  40% { transform: scale(1.04); }
+  100%{ transform: scale(1); }
+}
+.sdot.active::before{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(90deg, transparent, rgba(53,224,197,.22), transparent);
+  animation: stepSweep 2s linear infinite;
+}
+@keyframes stepSweep{
+  from{ transform: translateX(-100%); }
+  to  { transform: translateX(100%); }
+}
+
+/* ---------- Microscope: glow + sweep + focus pulse ---------- */
+.scope{
+  animation: scopeGlow 5s ease-in-out infinite;
+  transform-style: preserve-3d;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+.scope:hover{ transform: rotateX(4deg) rotateY(-4deg); }
+@keyframes scopeGlow{
+  0%,100%{ box-shadow: inset 0 0 70px rgba(0,0,0,.9), 0 0 30px rgba(53,224,197,.15); }
+  50%    { box-shadow: inset 0 0 70px rgba(0,0,0,.9), 0 0 70px rgba(53,224,197,.5); }
+}
+.scope::before{
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background: linear-gradient(180deg, transparent 0%, rgba(53,224,197,.12) 50%, transparent 100%);
+  animation: scan 3.5s ease-in-out infinite;
+  border-radius: 14px;
+}
+@keyframes scan{
+  0%,100%{ transform: translateY(-100%); opacity: 0; }
+  50%    { transform: translateY(100%);  opacity: 1; }
+}
+
+/* ---------- Table rows: 3D slide + glow ---------- */
+tbody tr{
+  transition: transform .25s cubic-bezier(.2,.8,.2,1),
+              background .25s ease, box-shadow .25s;
+}
+tbody tr:hover{
+  transform: translateX(6px) scale(1.01);
+  background: linear-gradient(90deg, #13253f, #16304f, #13253f);
+  box-shadow: inset 4px 0 0 var(--acc), 0 4px 18px rgba(0,0,0,.3);
+}
+
+/* ---------- Result: pop + count-up glow ---------- */
+.result .big{
+  display: inline-block;
+  animation: bigPop .8s cubic-bezier(.2,.8,.2,1);
+  text-shadow: 0 0 24px rgba(53,224,197,.5);
+}
+@keyframes bigPop{
+  0%  { transform: scale(.4) rotate(-6deg); opacity: 0; filter: blur(10px); }
+  60% { transform: scale(1.15) rotate(2deg); opacity: 1; filter: blur(0); }
+  100%{ transform: scale(1) rotate(0); }
+}
+
+/* ---------- Toast: 3D fly-in, shake, glow ---------- */
+.toast{
+  transition: .45s cubic-bezier(.2,.8,.2,1);
+}
+.toast.show.ok{
+  animation: toastIn .6s cubic-bezier(.2,.8,.2,1),
+             toastGlow 2s ease-in-out infinite;
+}
+.toast.show.err{
+  animation: toastIn .6s cubic-bezier(.2,.8,.2,1),
+             toastShake .7s ease-in-out;
+}
+@keyframes toastIn{
+  from{ transform: translate(-50%, 80px) rotateX(20deg) scale(.85); opacity: 0; }
+  to  { transform: translate(-50%, 0) rotateX(0) scale(1);        opacity: 1; }
+}
+@keyframes toastGlow{
+  0%,100%{ box-shadow: 0 12px 36px rgba(0,0,0,.5), 0 0 0 0 rgba(53,224,197,0); }
+  50%    { box-shadow: 0 12px 36px rgba(0,0,0,.5), 0 0 32px 4px rgba(53,224,197,.45); }
+}
+@keyframes toastShake{
+  0%,100%{ transform: translate(-50%, 0) rotate(0) }
+  20%    { transform: translate(calc(-50% - 10px), 0) rotate(-2deg) }
+  40%    { transform: translate(calc(-50% + 10px), 0) rotate(2deg) }
+  60%    { transform: translate(calc(-50% - 6px), 0) rotate(-1deg) }
+  80%    { transform: translate(calc(-50% + 6px), 0) rotate(1deg) }
+}
+
+/* ---------- Hero: float + glow + shimmer ---------- */
+.hero h2{ animation: heroFloat 7s ease-in-out infinite; }
+@keyframes heroFloat{
+  0%,100%{ transform: translateY(0) rotate(0); }
+  50%    { transform: translateY(-8px) rotate(-.4deg); }
+}
+.hero h2 em{
+  background-size: 300% auto;
+  animation: shimmer 4s linear infinite,
+             glowText 3s ease-in-out infinite;
+}
+@keyframes shimmer{ to{ background-position: 300% center; } }
+@keyframes glowText{
+  0%,100%{ filter: drop-shadow(0 0 10px rgba(53,224,197,.35)); }
+  50%    { filter: drop-shadow(0 0 30px rgba(53,224,197,.8)); }
+}
+.hero .eyebrow{
+  animation: eyebrowPulse 3s ease-in-out infinite;
+}
+@keyframes eyebrowPulse{
+  0%,100%{ box-shadow: 0 0 0 0 rgba(53,224,197,0); }
+  50%    { box-shadow: 0 0 24px 3px rgba(53,224,197,.35); }
+}
+
+/* ---------- Headings: underline draw ---------- */
+.page.active h2::after,
+.page.active h3::after{
+  content:""; display: block; height: 2px; width: 0;
+  margin-top: 6px;
+  background: linear-gradient(90deg, var(--acc), transparent);
+  animation: underlineDraw .9s cubic-bezier(.2,.8,.2,1) .3s forwards;
+}
+@keyframes underlineDraw{ to{ width: 70px; } }
+
+/* ---------- Confetti pieces ---------- */
+.confetti-piece{
+  position: fixed; top: -20px; pointer-events: none; z-index: 999;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall{
+  0%  { transform: translateY(0) rotate(0); opacity: 1; }
+  100%{ transform: translateY(110vh) rotate(1080deg); opacity: 0; }
+}
+
+/* ---------- Focus ring for keyboard users ---------- */
+:focus-visible{
+  outline: 2px solid var(--acc);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+  #fx-canvas,.cursor-glow,.cursor-ring,.cursor-dot{ display: none; }
+}
+/* Force Applications page to be visible */
+#page-apps.active {
+  display: block !important;
+}
+#page-apps.active .card {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}
+/* ============================================================
+   CINEMATIC HERO ANIMATION (SHIELD -> NEWTON'S RINGS)
+   ============================================================ */
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+/* The Canvas that draws the rings */
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1s ease-in;
+}
+#hero-canvas.active {
+  opacity: 1;
+}
+
+/* Make sure text stays above the canvas */
+.hero > *:not(#hero-canvas):not(#cap-shield) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Captain America Shield */
+#cap-shield {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 140px; height: 140px;
+  margin-left: -70px; margin-top: -70px;
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 0;
+  animation: throwShield 2.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  pointer-events: none;
+}
+
+.s-ring {
+  position: absolute; border-radius: 50%;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+}
+.s-red { width: 100%; height: 100%; background: #c8102e; }
+.s-white { width: 82%; height: 82%; background: #f0f0f0; }
+.s-red-inner { width: 64%; height: 64%; background: #c8102e; }
+.s-blue { width: 46%; height: 46%; background: #004b87; display: flex; align-items: center; justify-content: center; }
+.s-star { color: #fff; font-size: 28px; line-height: 1; margin-top: -2px; }
+
+@keyframes throwShield {
+  0%   { transform: translate(-400px, 300px) rotate(-720deg) scale(0.4); opacity: 1; filter: blur(2px); }
+  60%  { transform: translate(0, 0) rotate(0deg) scale(1.1); opacity: 1; filter: blur(0); } /* Impact */
+  70%  { transform: translate(0, 0) rotate(0deg) scale(1.4); opacity: 0.8; filter: blur(4px); box-shadow: 0 0 100px 40px rgba(255,200,0,0.6); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(2); opacity: 0; filter: blur(10px); }
+}
+</style>
+
+</head>
+<script id="genz-fx-js">
+/* ============================================================
+   GEN-Z ANIMATION LAYER — v3 JS
+   ============================================================ */
+
+/* ---- 1. Canvas particle field (out-of-boundary motion) ---- */
+(function(){
+  const cv = document.createElement('canvas');
+  cv.id = 'fx-canvas';
+  document.body.insertBefore(cv, document.body.firstChild);
+  const ctx = cv.getContext('2d');
+
+  let W, H;
+  function resize(){
+    W = cv.width  = window.innerWidth  * devicePixelRatio;
+    H = cv.height = window.innerHeight * devicePixelRatio;
+    cv.style.width  = window.innerWidth  + 'px';
+    cv.style.height = window.innerHeight + 'px';
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const COLORS = ['#35e0c5', '#5b8cff', '#ffc857', '#ff6b7a', '#a78bfa'];
+  const N = 55;
+  const pts = [];
+  for(let i=0; i<N; i++){
+    pts.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      vx: (Math.random()-.5)*0.35,
+      vy: (Math.random()-.5)*0.35,
+      r: (1 + Math.random()*3) * devicePixelRatio,
+      c: COLORS[Math.floor(Math.random()*COLORS.length)],
+      baseA: 0.15 + Math.random()*0.25
+    });
+  }
+
+  let mouse = { x: W/2, y: H/2, active: false };
+  document.addEventListener('mousemove', e=>{
+    mouse.x = e.clientX * devicePixelRatio;
+    mouse.y = e.clientY * devicePixelRatio;
+    mouse.active = true;
+  });
+  document.addEventListener('mouseleave', ()=> mouse.active = false);
+
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+
+    /* connect nearby particles */
+    for(let i=0; i<N; i++){
+      const a = pts[i];
+      for(let j=i+1; j<N; j++){
+        const b = pts[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const d  = Math.hypot(dx,dy);
+        if(d < 160*devicePixelRatio){
+          const alpha = (1 - d/(160*devicePixelRatio)) * 0.12;
+          ctx.strokeStyle = `rgba(53,224,197,${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+        }
+      }
+    }
+
+    /* draw particles */
+    pts.forEach(p=>{
+      p.x += p.vx * devicePixelRatio;
+      p.y += p.vy * devicePixelRatio;
+
+      /* mouse repulsion (out-of-boundary feel) */
+      if(mouse.active){
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const d2 = dx*dx + dy*dy;
+        const R  = 180 * devicePixelRatio;
+        if(d2 < R*R && d2 > 0){
+          const f = (1 - Math.sqrt(d2)/R) * 1.6;
+          p.vx += (dx/Math.sqrt(d2)) * f;
+          p.vy += (dy/Math.sqrt(d2)) * f;
+        }
+      }
+
+      /* friction + wrap */
+      p.vx *= 0.985; p.vy *= 0.985;
+      if(p.x < -20) p.x = W+20;
+      if(p.x > W+20) p.x = -20;
+      if(p.y < -20) p.y = H+20;
+      if(p.y > H+20) p.y = -20;
+
+      /* glow dot */
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r*6);
+      grd.addColorStop(0, p.c + 'cc');
+      grd.addColorStop(1, p.c + '00');
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r*6, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = p.c;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+/* ---- 2. Cursor: 3-layer spring trail ---- */
+(function(){
+  const glow = document.createElement('div'); glow.className = 'cursor-glow';
+  const ring = document.createElement('div'); ring.className = 'cursor-ring';
+  const dot  = document.createElement('div'); dot.className  = 'cursor-dot';
+  document.body.append(glow, ring, dot);
+
+  let mx = window.innerWidth/2, my = window.innerHeight/2;
+  let gx = mx, gy = my, rx = mx, ry = my;
+
+  document.addEventListener('mousemove', e=>{ mx = e.clientX; my = e.clientY; });
+
+  (function loop(){
+    gx += (mx - gx) * 0.08;  gy += (my - gy) * 0.08;
+    rx += (mx - rx) * 0.22;  ry += (my - ry) * 0.22;
+    glow.style.left = gx + 'px';  glow.style.top = gy + 'px';
+    ring.style.left = rx + 'px';  ring.style.top = ry + 'px';
+    dot.style.left  = mx + 'px';  dot.style.top  = my + 'px';
+    requestAnimationFrame(loop);
+  })();
+
+  /* magnify ring over interactive elements */
+  document.addEventListener('mouseover', e=>{
+    if(e.target.closest('button, a, .opt, .btn, .card, .prep')) ring.classList.add('hover');
+  });
+  document.addEventListener('mouseout', e=>{
+    if(e.target.closest('button, a, .opt, .btn, .card, .prep')) ring.classList.remove('hover');
+  });
+})();
+
+/* ---- 3. Card 3D tilt + spotlight follow ---- */
+(function(){
+  document.addEventListener('mousemove', e=>{
+    const card = e.target.closest('.card');
+    if(!card) return;
+    const r  = card.getBoundingClientRect();
+    const cx = e.clientX - r.left;
+    const cy = e.clientY - r.top;
+    const px = (cx / r.width  - .5);
+    const py = (cy / r.height - .5);
+    card.style.transform =
+      `perspective(900px) rotateX(${-py*6}deg) rotateY(${px*6}deg) translateZ(2px)`;
+    card.style.setProperty('--mx', cx + 'px');
+    card.style.setProperty('--my', cy + 'px');
+  });
+  document.addEventListener('mouseout', e=>{
+    const card = e.target.closest('.card');
+    if(card && !card.contains(e.relatedTarget)){
+      card.style.transform = '';
+    }
+  });
+})();
+
+/* ---- 4. Page transitions: fly out + fly in ---- */
+(function(){
+  const origSwitch = window.switchTab;
+  if(typeof origSwitch !== 'function') return;
+  window.switchTab = function(name){
+    const cur = document.querySelector('.page.active');
+    if(cur && !cur.classList.contains('exiting')){
+      cur.classList.add('exiting');
+      setTimeout(()=> cur.classList.remove('exiting', 'active'), 420);
+    }
+    setTimeout(()=>{
+      origSwitch(name);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 260);
+  };
+})();
+
+/* ---- 5. Ripple on every button (bigger, glowing) ---- */
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.btn');
+  if(!btn) return;
+  const r = btn.getBoundingClientRect();
+  const size = Math.max(r.width, r.height) * 1.2;
+  const span = document.createElement('span');
+  span.className = 'ripple';
+  span.style.cssText = `
+    position:absolute; border-radius:50%; pointer-events:none;
+    width:${size}px; height:${size}px;
+    left:${e.clientX - r.left - size/2}px;
+    top:${e.clientY - r.top - size/2}px;
+    background:radial-gradient(circle, rgba(255,255,255,.85), rgba(255,255,255,0) 70%);
+    animation: ripple .9s cubic-bezier(.2,.8,.2,1) forwards;
+  `;
+  btn.appendChild(span);
+  setTimeout(()=> span.remove(), 950);
+}, true);
+
+/* ---- 6. Count-up animation for λ ---- */
+(function(){
+  const calcOut = document.getElementById('calcOut');
+  if(!calcOut) return;
+  new MutationObserver(()=>{
+    const big = calcOut.querySelector('.result .big');
+    if(!big || big.dataset.animated) return;
+    const m = big.textContent.match(/λ\s*=\s*(\d+)\s*±\s*(\d+)/);
+    if(!m) return;
+    big.dataset.animated = '1';
+    const target = +m[1], err = m[2];
+    const start = performance.now();
+    (function tick(now){
+      const t = Math.min(1, (now - start) / 1100);
+      const eased = 1 - Math.pow(1 - t, 4);
+      big.textContent = `λ = ${Math.round(target * eased)} ± ${err} Å`;
+      if(t < 1) requestAnimationFrame(tick);
+    })(start);
+  }).observe(calcOut, { childList:true, subtree:true });
+})();
+
+/* ---- 7. Confetti burst on report ---- */
+(function(){
+  const orig = window.buildReport;
+  if(typeof orig !== 'function') return;
+  window.buildReport = function(){
+    orig.apply(this, arguments);
+    const colors = ['#35e0c5','#5b8cff','#ffc857','#ff6b7a','#a78bfa'];
+    for(let i=0; i<90; i++){
+      const c = document.createElement('div');
+      c.className = 'confetti-piece';
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[i % colors.length];
+      c.style.width  = (6 + Math.random()*10) + 'px';
+      c.style.height = (6 + Math.random()*10) + 'px';
+      c.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+      const dur = 1.8 + Math.random()*1.6;
+      const delay = Math.random()*0.5;
+      c.style.animationDuration = dur + 's';
+      c.style.animationDelay = delay + 's';
+      document.body.appendChild(c);
+      setTimeout(()=> c.remove(), (dur + delay) * 1000 + 300);
+    }
+  };
+})();
+
+/* ---- 8. Magnetic pull on primary/gold buttons ---- */
+document.addEventListener('mousemove', e=>{
+  document.querySelectorAll('.btn.primary, .btn.gold').forEach(btn=>{
+    const r = btn.getBoundingClientRect();
+    const dx = (e.clientX - (r.left + r.width/2)) * 0.12;
+    const dy = (e.clientY - (r.top  + r.height/2)) * 0.12;
+    const d2 = dx*dx + dy*dy;
+    if(d2 < 20000){
+      btn.style.transform = `translate(${dx}px, ${dy - 3}px) rotateX(4deg) scale(1.03)`;
+    } else if(!btn.matches(':hover')){
+      btn.style.transform = '';
+    }
+  });
+});
+
+/* ---- 9. Keyboard shortcuts in Step 2 ---- */
+document.addEventListener('keydown', e=>{
+  const panel = document.getElementById('spanel-2');
+  if(!panel || panel.classList.contains('hide')) return;
+  if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+  if(e.key === 'ArrowLeft')  { nudge(e.shiftKey ? -0.010 : -0.001); e.preventDefault(); }
+  if(e.key === 'ArrowRight') { nudge(e.shiftKey ?  0.010 :  0.001); e.preventDefault(); }
+});
+
+/* ---- 10. Replay reveal on step change ---- */
+(function(){
+  new MutationObserver(muts=>{
+    muts.forEach(m=>{
+      if(m.target.classList.contains('spane') && !m.target.classList.contains('hide')){
+        m.target.querySelectorAll('.card, .kv, .result, tbody tr, .prep')
+          .forEach(el=>{
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+          });
+      }
+    });
+  }).observe(document.body, { attributes:true, attributeFilter:['class'], subtree:true });
+})();
+
+/* ---- 11. 3D Application Viewer Logic ---- */
+window.rotate3D = function(e, card) {
+  const obj = card.querySelector('.obj-3d');
+  const scene = card.querySelector('.scene-3d');
+  if (!obj || !scene) return;
+  
+  const rect = scene.getBoundingClientRect();
+  
+  // Calculate mouse position relative to center of the scene
+  const x = e.clientX - rect.left - rect.width / 2;
+  const y = e.clientY - rect.top - rect.height / 2;
+  
+  // Map to degrees (max tilt 30 degrees)
+  const rotateX = (y / rect.height) * -30;
+  const rotateY = (x / rect.width) * 30;
+  
+  obj.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.1)`;
+};
+
+window.reset3D = function(card) {
+  const obj = card.querySelector('.obj-3d');
+  if (!obj) return;
+  
+  obj.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+  obj.style.transition = 'transform 0.5s ease-out';
+  
+  // Reset transition after the animation finishes
+  setTimeout(() => { 
+    obj.style.transition = 'transform 0.1s ease-out'; 
+  }, 500);
+};
+/* ---- 12. Cinematic Hero Animation (Shield -> Newton's Rings) ---- */
+(function(){
+  const canvas = document.getElementById('hero-canvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const hero = document.querySelector('.hero');
+  
+  let W, H, cx, cy;
+  function resize() {
+    W = canvas.width = hero.offsetWidth * devicePixelRatio;
+    H = canvas.height = hero.offsetHeight * devicePixelRatio;
+    cx = W / 2;
+    cy = H / 2;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let time = 0;
+  let running = false;
+
+  function drawRings() {
+    if(!running) return;
+    ctx.clearRect(0, 0, W, H);
+    
+    // Draw the sodium interference pattern
+    time += 0.02;
+    const numRings = 15;
+    const maxRadius = Math.max(W, H);
+    
+    // Draw background glow
+    const bgGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadius * 0.6);
+    bgGlow.addColorStop(0, 'rgba(255, 200, 87, 0.15)'); // Sodium Yellow
+    bgGlow.addColorStop(0.5, 'rgba(53, 224, 197, 0.05)'); // Teal
+    bgGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = bgGlow;
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw concentric rings (Newton's Rings formula)
+    for (let i = 1; i <= numRings; i++) {
+      // Formula: D^2 = 4 * n * lambda * R (simplified for visuals)
+      const radius = Math.sqrt(i) * (40 * devicePixelRatio) + (Math.sin(time + i) * 2 * devicePixelRatio);
+      
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      
+      if (i % 2 === 0) {
+        // Bright rings (Sodium Yellow)
+        ctx.strokeStyle = `rgba(255, 200, 87, ${0.6 - (i / numRings) * 0.5})`;
+        ctx.lineWidth = 3 * devicePixelRatio;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(255, 200, 87, 0.5)';
+      } else {
+        // Dark rings (Teal/Blue glow)
+        ctx.strokeStyle = `rgba(53, 224, 197, ${0.3 - (i / numRings) * 0.2})`;
+        ctx.lineWidth = 2 * devicePixelRatio;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(53, 224, 197, 0.3)';
+      }
+      ctx.stroke();
+    }
+    
+    // Reset shadow for next frame
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(drawRings);
+  }
+
+  // Wait for the shield to hit the center (1.3 seconds into the animation), then start the rings
+  setTimeout(() => {
+    canvas.classList.add('active');
+    running = true;
+    drawRings();
+  }, 1300); 
+})();
+</script>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">◎</div>
+    <div>
+      <h1>Newton's Rings <span>Virtual Lab</span></h1>
+      <p>Determine the wavelength of sodium light</<script id="genz-fx-js"p>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="home" class="active">Home</button>
+    <button data-tab="theory">Theory</button>
+    <button data-tab="lab">Virtual Lab</button>
+    <button data-tab="demo">Demo</button>
+    <button data-tab="apps">Applications</button>
+    <button data-tab="quiz">Quiz</button>
+    <button data-tab="about">About</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section id="page-home" class="page active">
+  <div class="hero">
+        <!-- HERO ANIMATION -->
+    <canvas id="hero-canvas"></canvas>
+    <div id="cap-shield">
+      <div class="s-ring s-red"></div>
+      <div class="s-ring s-white"></div>
+      <div class="s-ring s-red-inner"></div>
+      <div class="s-ring s-blue"><div class="s-star">★</div></div>
+    </div>
+    <div class="eyebrow">Physics Laboratory · Experiment 1</div>
+    <h2>Measure the wavelength of <em>sodium light</em><br>without touching a real bench.</h2>
+    <p>This virtual lab reproduces the complete Newton's Rings experiment — align the travelling
+       microscope, record ring diameters, measure the lens curvature with a spherometer, plot
+       D² vs n, and calculate λ. Your measured value is not given to you; you have to find it.</p>
+    <button class="btn primary" onclick="switchTab('lab')">▶ Start the experiment</button>
+    <button class="btn" onclick="switchTab('theory')">Read the theory</button>
+  </div>
+
+  <div class="feat">
+    <div><b>Realistic eyepiece</b><span>A zoomed microscope view with a movable crosswire and vernier scale.</span></div>
+    <div><b>Hidden wavelength</b><span>λ is fixed in the simulation. You recover it by measurement only.</span></div>
+    <div><b>Auto graph</b><span>D² vs n is plotted from your data and the slope is fitted.</span></div>
+    <div><b>Printable report</b><span>Generates a full lab record with tables, graph and result.</span></div>
+  </div>
+</section>
+
+<!-- ================= THEORY ================= -->
+<section id="page-theory" class="page">
+  <div class="card">
+    <h2>Objective</h2>
+    <p>To determine the wavelength of sodium light with the help of a Newton's rings setup.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>Apparatus</h3>
+      <ul class="muted small" style="line-height:1.9">
+        <li>Plano-convex lens and plane glass plate arrangement</li>
+        <li>Sodium lamp</li>
+        <li>Travelling microscope with eyepiece</li>
+        <li>Plane glass plate inclined at 45°</li>
+        <li>Spherometer, plane glass plate, table lamp</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Formulae</h3>
+      <div class="formula">λ = (D²<sub>n+p</sub> − D²<sub>n</sub>) / (4 p R)</div>
+      <div class="formula" style="margin-top:10px">R = l² / (6h) + h/2</div>
+      <p class="muted small" style="margin-top:10px">
+        D<sub>n</sub> = diameter of the n<sup>th</sup> dark ring · p = number of rings between the two
+        readings · R = radius of curvature of the lens · l = distance between spherometer legs ·
+        h = sagitta (difference of spherometer readings).
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Division of amplitude</h3>
+    <p class="muted">When light falls on a thin film, the wave reflected from the upper surface
+      interferes with the wave reflected from the lower surface. Reflection at a boundary with a
+      <b>rarer</b> medium produces no phase change; reflection at a boundary with a <b>denser</b>
+      medium introduces a phase change of 180° (π), i.e. an extra path difference of λ/2.</p>
+
+    <p style="margin-top:14px">For an air film of thickness <i>t</i> viewed at near-normal incidence,
+      the effective path difference is <span class="mono">2t − λ/2</span>. Hence:</p>
+    <div class="formula">Bright: 2t = (2n − 1) λ/2 &nbsp;&nbsp;·&nbsp;&nbsp; Dark: 2t = n λ</div>
+
+    <p style="margin-top:14px" class="muted">In a plano-convex lens resting on a plane plate, the air
+      film is circularly symmetric, so fringes of equal thickness become <b>concentric circles</b>.
+      At the point of contact t = 0, giving a dark central spot.</p>
+  </div>
+
+  <div class="card">
+    <h3>Geometry of the air film</h3>
+    <p class="muted">From the property of a circle, <span class="mono">r²<sub>n</sub> = t(2R − t) ≈ 2Rt</span>.
+      Substituting the dark-ring condition <span class="mono">2t = nλ</span>:</p>
+    <div class="formula">r²<sub>n</sub> = n λ R &nbsp; ⟹ &nbsp; D²<sub>n</sub> = 4 n λ R</div>
+    <p class="muted" style="margin-top:10px">Therefore <b>D²<sub>n</sub> is linear in n</b>. A graph of
+      D² vs n is a straight line through the origin whose slope is <span class="mono">4λR</span>.
+      Measuring the slope gives λ once R is known.</p>
+  </div>
+
+  <div class="card">
+    <h3>Ray diagram of the setup</h3>
+    <svg viewBox="0 0 720 300" style="width:100%;height:auto">
+      <defs>
+        <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="3.2" orient="auto">
+          <path d="M0,0 L7,3.2 L0,6.4 z" fill="#ffc857"/>
+        </marker>
+      </defs>
+      <!-- lamp -->
+      <circle cx="620" cy="150" r="26" fill="#3a2c07" stroke="#ffc857" stroke-width="2"/>
+      <circle cx="620" cy="150" r="11" fill="#ffc857" opacity=".9"/>
+      <text x="620" y="200" fill="#8fa0c2" font-size="12" text-anchor="middle">Sodium lamp</text>
+      <!-- rays to plate -->
+      <line x1="594" y1="145" x2="430" y2="145" stroke="#ffc857" stroke-width="1.6" marker-end="url(#arw)"/>
+      <line x1="594" y1="158" x2="430" y2="158" stroke="#ffc857" stroke-width="1.6" marker-end="url(#arw)"/>
+      <!-- 45 plate -->
+      <line x1="400" y1="110" x2="450" y2="190" stroke="#9ec1ff" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+      <text x="470" y="108" fill="#8fa0c2" font-size="12">45° glass plate</text>
+      <!-- downward rays -->
+      <line x1="425" y1="152" x2="425" y2="235" stroke="#35e0c5" stroke-width="1.6" marker-end="url(#arw)"/>
+      <line x1="415" y1="152" x2="415" y2="235" stroke="#35e0c5" stroke-width="1.6" marker-end="url(#arw)"/>
+      <!-- lens -->
+      <path d="M350 245 Q420 300 490 245 Z" fill="#12314a" stroke="#4a7fb0" stroke-width="2"/>
+      <rect x="330" y="245" width="180" height="9" fill="#12314a" stroke="#4a7fb0" stroke-width="2"/>
+      <text x="300" y="290" fill="#8fa0c2" font-size="12">Plano-convex lens + plate</text>
+      <!-- microscope -->
+      <rect x="404" y="40" width="32" height="70" rx="6" fill="#16233f" stroke="#3a4d78" stroke-width="2"/>
+      <rect x="398" y="100" width="44" height="12" rx="3" fill="#16233f" stroke="#3a4d78" stroke-width="2"/>
+      <text x="420" y="30" fill="#8fa0c2" font-size="12" text-anchor="middle">Travelling microscope</text>
+      <line x1="420" y1="112" x2="420" y2="240" stroke="#35e0c5" stroke-width="1.2" stroke-dasharray="4 4" opacity=".7"/>
+    </svg>
+    <p class="muted small">Light from the sodium lamp is reflected down by the 45° plate onto the lens.
+      The reflected rays from the top and bottom of the air film travel back up into the microscope,
+      where they interfere.</p>
+  </div>
+</section>
+
+<!-- ================= LAB ================= -->
+<section id="page-lab" class="page">
+
+  <div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0">Virtual Experiment Bench</h2>
+      <p class="muted small" style="margin:2px 0 0">Least count of travelling microscope: <b class="mono">0.001 cm</b> ·
+         Main-scale division: <b class="mono">0.05 cm</b></p>
+    </div>
+    <button class="btn danger sm" onclick="initLab()">↻ New sample</button>
+  </div>
+
+  <div class="stepper" id="stepper">
+    <button class="sdot active" data-step="1">1 · Preparation</button>
+    <button class="sdot" data-step="2">2 · Ring diameters</button>
+    <button class="sdot" data-step="3">3 · Spherometer</button>
+    <button class="sdot" data-step="4">4 · Graph &amp; λ</button>
+    <button class="sdot" data-step="5">5 · Report</button>
+  </div>
+
+  <!-- ---------- STEP 1 ---------- -->
+  <div class="spane" id="spanel-1">
+    <div class="card">
+      <h3>Set up the apparatus</h3>
+      <p class="muted small">Complete every step of the procedure before taking readings.</p>
+      <div id="prepList"></div>
+      <div style="margin-top:16px">
+        <button class="btn primary" id="btnStep1Next" disabled onclick="goStep(2)">Continue → Ring diameters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- STEP 2 ---------- -->
+  <div class="spane hide" id="spanel-2">
+    <div class="grid2">
+      <div class="card">
+        <h3>Eyepiece view</h3>
+        <div class="scope">
+          <span class="lbl">Microscope field of view</span>
+          <canvas id="epCanvas" width="480" height="330"></canvas>
+        </div>
+        <div class="mini">
+          <span class="lbl">Ring system overview</span>
+          <canvas id="miniCanvas" width="420" height="86"></canvas>
+        </div>
+
+        <div class="controls">
+          <button class="btn sm" onclick="nudge(-0.010)">⏪ 0.010</button>
+          <button class="btn sm" onclick="nudge(-0.001)">◀ 0.001</button>
+          <button class="btn sm" onclick="nudge(0.001)">0.001 ▶</button>
+          <button class="btn sm" onclick="nudge(0.010)">0.010 ⏩</button>
+          <button class="btn sm" onclick="setPos(S.C)">Centre</button>
+        </div>
+        <input type="range" id="posSlider" min="0" max="2500" step="1" value="1200"
+               oninput="setPos(this.value/1000)" />
+
+        <div class="readout">
+          <span>Crosswire position: <b class="mono" id="posReadout">—</b></span>
+          <span>Nearest dark ring: <b class="mono" id="nearRing" style="color:#ffc857">—</b></span>
+        </div>
+        <label class="muted small" style="display:flex;gap:8px;align-items:center;margin-top:10px">
+          <input type="checkbox" id="assistChk" checked onchange="S.assist=this.checked;updateReadout()" />
+          Show alignment assist (reveals how far you are from the ring edge)
+        </label>
+      </div>
+
+      <div class="card">
+        <h3>Observation table — ring diameters</h3>
+        <p class="muted small">Move the crosswire to the <b>left</b> edge of each ring, capture,
+           then move to the <b>right</b> edge and capture. D = b − a.</p>
+        <div class="tblwrap">
+          <table>
+            <thead>
+              <tr><th>Ring n</th><th>Left (a) cm</th><th>Right (b) cm</th><th>D (cm)</th><th>D² (cm²)</th></tr>
+            </thead>
+            <tbody id="ringTableBody"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" onclick="goStep(1)">← Back</button>
+          <button class="btn primary" id="btnStep2Next" onclick="goStep(3)">Continue → Spherometer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#0a1224">
+  <h4 style="font-size:.9rem;margin-bottom:4px">Quick jump to a ring edge</h4>
+  <p class="muted small" style="margin-bottom:10px">
+    One click per edge — the crosswire jumps to that ring and captures the reading with realistic noise.
+  </p>
+  <div id="jumpGrid" style="display:grid;grid-template-columns:repeat(9,1fr);gap:5px"></div>
+  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn sm" onclick="autoCompleteRings()">⚡ Auto-fill all rings</button>
+    <button class="btn sm danger" onclick="clearRings()">Clear rings</button>
+  </div>
+</div>
+
+  <!-- ---------- STEP 3 ---------- -->
+  <div class="spane hide" id="spanel-3">
+    <div class="card">
+      <h3>Measure the radius of curvature with a spherometer</h3>
+      <p class="muted small">Pitch = 0.1 cm · Circular scale divisions = 100 · Least count = 0.001 cm</p>
+      <div class="formula" id="spheroFormula">l = — cm &nbsp;·&nbsp; R = l²/(6h) + h/2</div>
+
+      <div style="margin:16px 0;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="takeSphero('plane')">Place on plane glass plate → take 3 readings</button>
+        <button class="btn" onclick="takeSphero('curved')">Place on lens surface → take 3 readings</button>
+      </div>
+
+      <div class="tblwrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Trial</th><th>Plane MS</th><th>CS</th><th>Total (cm)</th>
+              <th>Lens MS</th><th>CS</th><th>Total (cm)</th>
+            </tr>
+          </thead>
+          <tbody id="spheroTableBody">
+            <tr><td colspan="7" class="muted">No readings yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <details open style="margin-top:16px;border:1px solid var(--line);border-radius:10px;padding:12px 16px;background:#0a1224">
+  <summary style="cursor:pointer;color:var(--acc);font-weight:700;font-size:.9rem">
+    ▸ Calculation breakdown — how MS and CS are derived
+  </summary>
+  <div id="spheroCalcDetail" style="margin-top:12px;font-family:ui-monospace,monospace;font-size:.82rem;line-height:1.9">
+    <span class="muted">Take readings on the plane surface first to see the calculation breakdown.</span>
+  </div>
+</details>
+
+      <div id="spheroResult" style="margin-top:16px"></div>
+
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="goStep(2)">← Back</button>
+        <button class="btn primary" onclick="computeR()">Compute h and R</button>
+        <button class="btn primary" id="btnStep3Next" onclick="goStep(4)">Continue → Graph &amp; λ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- STEP 4 ---------- -->
+  <div class="spane hide" id="spanel-4">
+    <div class="grid2">
+      <div class="card">
+        <h3>Graph: D² vs n</h3>
+        <canvas id="graphCanvas" width="640" height="440" style="width:100%;height:auto;border-radius:10px;background:#0a1224"></canvas>
+        <p class="muted small" style="margin-top:10px">Slope of the best-fit line = 4λR.</p>
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+  <button class="btn sm" onclick="graphZoom(1.4)">− Zoom out</button>
+  <button class="btn sm" onclick="graphZoom(0.7)">+ Zoom in</button>
+  <button class="btn sm" onclick="graphReset()">⟲ Reset view</button>
+</div>
+      </div>
+      <div class="card">
+        <h3>Calculation</h3>
+        <p class="muted small">Press the button to fit the line and compute the wavelength from your own readings.</p>
+        <button class="btn gold" onclick="calculate()">Plot graph &amp; calculate λ</button>
+        <div id="calcOut" style="margin-top:16px">
+          <p class="muted small">Complete the measurements, then press “Plot graph &amp; calculate”.</p>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" onclick="goStep(3)">← Back</button>
+          <button class="btn primary" id="btnStep4Next" onclick="goStep(5)">Continue → Report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- STEP 5 ---------- -->
+  <div class="spane hide" id="spanel-5">
+    <div class="card">
+      <h3>Generate your lab report</h3>
+      <div class="grid3" style="margin-top:14px">
+        <div><label class="muted small">Name</label><input class="inp" id="stName" placeholder="Your name"
+          style="width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:#0a1224;color:var(--txt);font-family:inherit"></div>
+        <div><label class="muted small">Roll / Register No.</label><input class="inp" id="stRoll" placeholder="e.g. 22PHY045"
+          style="width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:#0a1224;color:var(--txt);font-family:inherit"></div>
+        <div><label class="muted small">Date</label><input class="inp" id="stDate" type="date"
+          style="width:100%;padding:10px;border-radius:9px;border:1px solid var(--line);background:#0a1224;color:var(--txt);font-family:inherit"></div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="goStep(4)">← Back</button>
+        <button class="btn primary" onclick="buildReport()">📄 Generate report</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEMO ================= -->
+<section id="page-demo" class="page">
+  <div class="card">
+    <h2>Sandbox — how does the pattern change?</h2>
+    <p class="muted small">This is a <b>theory demo only</b>. Nothing here is used in your report.
+      Move the sliders to see how wavelength and lens curvature change the ring pattern.</p>
+
+    <div class="grid2" style="margin-top:16px">
+      <div>
+        <div class="scope" style="border-radius:12px">
+          <span class="lbl">Simulated pattern</span>
+          <canvas id="demoCanvas" width="480" height="360"></canvas>
+        </div>
+        <p class="mono small" id="demoInfo" style="margin-top:10px"></p>
+      </div>
+      <div>
+        <label class="muted small">Wavelength λ = <b class="mono" id="dLambdaVal">5893 Å</b></label>
+        <input type="range" id="dLambda" min="4000" max="7000" value="5893" step="1" oninput="drawDemo()" />
+        <label class="muted small">Radius of curvature R = <b class="mono" id="dRVal">100 cm</b></label>
+        <input type="range" id="dR" min="40" max="200" value="100" step="1" oninput="drawDemo()" />
+        <div class="formula" style="margin-top:16px">D²<sub>n</sub> = 4 n λ R</div>
+        <p class="muted small" style="margin-top:10px">Increase λ → rings spread out. Increase R → rings
+          become finer and more closely packed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<main>
+<section id="page-apps" class="page">
+  <div class="card">
+    <h2>Real-World Applications</h2>
+    <p class="muted">Move your mouse over the 3D models below to explore how thin-film interference is used in modern engineering.</p>
+  </div>
+
+  <div class="grid3" style="margin-top:20px">
+    
+    <!-- 3D APP 1: Anti-Reflective Coatings -->
+    <div class="card app-card" onmousemove="rotate3D(event, this)" onmouseleave="reset3D(this)">
+      <div class="scene-3d">
+        <div class="obj-3d">
+          <div class="lens-layer" style="transform: translateZ(0px)"></div>
+          <div class="lens-layer" style="transform: translateZ(15px) scale(0.9); border-color: #35e0c5;"></div>
+          <div class="lens-layer" style="transform: translateZ(30px) scale(0.7); border-color: #5b8cff;"></div>
+          <div class="light-wave" style="transform: translateZ(40px) rotateX(45deg);"></div>
+        </div>
+      </div>
+      <h3 style="margin-top:15px;color:var(--acc)">Anti-Reflective Coatings</h3>
+      <p class="muted small">Eyeglasses and camera lenses are coated with a precise thin film. The light reflecting off the top and bottom of the coating cancels out (destructive interference), eliminating glare.</p>
+    </div>
+
+    <!-- 3D APP 2: Optical Flat Testing -->
+    <div class="card app-card" onmousemove="rotate3D(event, this)" onmouseleave="reset3D(this)">
+      <div class="scene-3d">
+        <div class="obj-3d">
+          <div class="plate-3d" style="transform: translateZ(0px)"></div>
+          <div class="plate-3d" style="transform: translateZ(25px) translateY(-10px); background: rgba(255,255,255,0.1); border: 1px solid var(--acc);"></div>
+          <div class="rings-3d" style="transform: translateZ(15px) rotateX(60deg);"></div>
+        </div>
+      </div>
+      <h3 style="margin-top:15px;color:var(--acc2)">Optical Flat Testing</h3>
+      <p class="muted small">Manufacturers place a perfectly flat glass plate over a lens. If Newton's rings appear, it reveals microscopic imperfections, allowing quality control down to nanometers.</p>
+    </div>
+
+    <!-- 3D APP 3: Liquid Refractometry -->
+    <div class="card app-card" onmousemove="rotate3D(event, this)" onmouseleave="reset3D(this)">
+      <div class="scene-3d">
+        <div class="obj-3d">
+          <div class="plate-3d" style="transform: translateZ(0px)"></div>
+          <div class="droplet-3d" style="transform: translateZ(15px)"></div>
+          <div class="lens-3d" style="transform: translateZ(35px)"></div>
+        </div>
+      </div>
+      <h3 style="margin-top:15px;color:#ff6b7a">Liquid Refractometry</h3>
+      <p class="muted small">By placing a liquid drop between the lens and plate, the ring diameters shrink. Chemists use this shift to precisely measure the refractive index of unknown liquids.</p>
+    </div>
+
+  </div>
+</section>
+
+ 
+</body>
+<!-- ================= QUIZ ================= -->
+<section id="page-quiz" class="page">
+  <div class="card">
+    <h2>Check your understanding</h2>
+    <p class="muted small">Five quick questions on the experiment.</p>
+  </div>
+  <div id="quizBox"></div>
+  <div class="card">
+    <button class="btn primary" onclick="checkQuiz()">Check answers</button>
+    <span id="quizScore" style="margin-left:14px;font-weight:700"></span>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="page-about" class="page">
+  <div class="card">
+    <h2>About this project</h2>
+    <p class="muted">A project-based learning (PBL) submission for Physics Laboratory-1,
+      Department of Physics and Materials Science and Engineering.</p>
+    <p class="muted">The aim was to go beyond a digitised lab manual by building an actual
+      virtual bench: the wavelength is hidden inside the simulation, the student must align the
+      crosswire, record readings, fit a graph and compute the result — exactly as on a real bench.</p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>Learning outcomes</h3>
+      <ul class="muted small" style="line-height:1.9">
+        <li>Understand division of amplitude and thin-film interference</li>
+        <li>Relate ring diameter to ring order and lens curvature</li>
+        <li>Use a travelling microscope and a spherometer</li>
+        <li>Fit a straight line and extract a physical constant</li>
+        <li>Estimate maximum probable error</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>References</h3>
+      <ul class="muted small" style="line-height:1.9">
+        <li>Physics Laboratory-1 manual, Experiment 1 — Newton's Rings</li>
+        <li>Optics by Ajoy Ghatak</li>
+        <li>Fundamentals of Optics — Jenkins &amp; White</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- ================= REPORT OVERLAY ================= -->
+<div id="reportOverlay">
+  <div class="rbar">
+    <button class="btn" onclick="closeReport()">✕ Close</button>  <!-- ADD THIS LINE -->
+    <button class="btn primary" onclick="window.print()">🖨 Print / Save as PDF</button>
+  </div>
+  <div class="rpage" id="reportBody"></div>
+</div>
+
+<script>
+/* =====================================================================
+   NEWTON'S RINGS VIRTUAL LAB
+   The wavelength below is the hidden ground truth. The student never
+   sees it — it is recovered only by measurement.
+   ===================================================================== */
+const LAMBDA_TRUE = 5.893e-5;   // cm  (5893 Å) — hidden
+const LC_MIC      = 0.001;      // cm  microscope least count
+const MSD_MIC     = 0.05;       // cm  main-scale division
+const LC_SPH      = 0.001;      // cm  spherometer least count
+const TOL         = 0.0025;
+const GRAPH_ZOOM_SPEED = 0.0015;   // smaller = slower zoom  (0.001 slow · 0.0015 default · 0.003 fast)    // cm  tangency tolerance
+const RING_NS     = [4,6,8,10,12,14,16,18,20];
+const STD_LAMBDA  = 5893;       // Å
+
+const S = {
+  R: 100, C: 1.2, l: 4.0, pos: 1.2,
+  data: {}, sphero: null, assist: true,
+  fit: null, lambda: null, Rmeas: null, dLam: null
+};
+
+let prepDone = [false,false,false,false,false];
+
+/* ---------------- helpers ---------------- */
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const rnd = (a,b)=>a+Math.random()*(b-a);
+const r3 = v=>Math.round(v*1000)/1000;
+
+function toast(msg,type='ok'){
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast show '+type;
+  clearTimeout(t._h);
+  t._h = setTimeout(()=>{ t.className='toast'; }, 3400);
+}
+
+function vernier(v){                    // travelling microscope reading breakdown
+  let ms = Math.floor(v/MSD_MIC + 1e-9)*MSD_MIC;
+  let vc = Math.round((v-ms)/LC_MIC);
+  if(vc>=50){ ms += MSD_MIC; vc -= 50; }
+  return { ms:+ms.toFixed(2), vc, total: ms + vc*LC_MIC };
+}
+function spheroParts(v){                // spherometer reading breakdown
+  let ms = Math.floor(v/0.1 + 1e-9)*0.1;
+  let cs = Math.round((v-ms)/LC_SPH);
+  if(cs>=100){ ms += 0.1; cs -= 100; }
+  return { ms:+ms.toFixed(1), cs, total: ms + cs*LC_SPH };
+}
+function ringRadius(n){ return Math.sqrt(n*LAMBDA_TRUE*S.R); }
+
+/* ---------------- tabs ---------------- */
+function switchTab(name){
+  $$('#tabs button').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  $('#page-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(name==='demo') drawDemo();
+}
+$$('#tabs button').forEach(b=> b.onclick = ()=> switchTab(b.dataset.tab));
+
+/* =====================================================================
+   INITIALISE
+   ===================================================================== */
+function initLab(){
+  S.R   = rnd(90,130);          // hidden lens curvature
+  S.C   = rnd(1.10,1.26);       // hidden ring-centre position on the scale
+  S.l   = 4.00 + rnd(-0.01,0.01);
+  S.spheroBase = rnd(0.45,0.75);
+  S.pos = S.C;
+  S.graphView = null;
+  S.graphHover = null;
+  S.data = {};
+  S.sphero = null; S.fit = null; S.lambda = null; S.Rmeas = null; S.dLam = null;
+
+  prepDone = [false,false,false,false,false];
+  renderPrep();
+  renderRingTable();
+  renderSpheroTable();
+  $('#spheroResult').innerHTML = '';
+  $('#spheroFormula').textContent = `l = ${S.l.toFixed(2)} cm  ·  R = l²/(6h) + h/2`;
+  $('#calcOut').innerHTML = '<p class="muted small">Complete the measurements, then press “Plot graph &amp; calculate”.</p>';
+  $('#btnStep2Next').disabled = false;
+  $('#btnStep3Next').disabled = true;
+  $('#btnStep4Next').disabled = true;
+  goStep(1);
+  updateReadout();
+  requestDraw();
+}
+
+/* =====================================================================
+   STEP 1 — PREPARATION
+   ===================================================================== */
+const PREP = [
+  'Clean the plano-convex lens and the plane glass plate with tissue paper',
+  'Focus the eyepiece until the crosswires are clearly visible',
+  'Place the plano-convex lens (curved side down) on the glass plate',
+  'Adjust the microscope until the Newton\'s rings are sharp and circular',
+  'Align the horizontal crosswire through the centre of the ring system'
+];
+
+function renderPrep(){
+  const wrap = $('#prepList');
+  wrap.innerHTML = PREP.map((t,i)=>`
+    <div class="prep ${prepDone[i]?'done':''}">
+      <span class="tick">${prepDone[i]?'✓':i+1}</span>
+      <span class="txt">${t}</span>
+      ${prepDone[i]?'<span class="badge ok">done</span>'
+        :`<button class="btn sm" onclick="doPrep(${i})">Do it</button>`}
+    </div>`).join('');
+  $('#btnStep1Next').disabled = !prepDone.every(Boolean);
+}
+function doPrep(i){
+  prepDone[i] = true;
+  renderPrep();
+  if(i===4) setPos(S.C);         // centring the crosswire
+  if(prepDone.every(Boolean)) toast('Apparatus ready. Move to step 2.','ok');
+  else toast('Step completed.','ok');
+}
+
+/* =====================================================================
+   STEP NAVIGATION
+   ===================================================================== */
+function prepAll(){ return prepDone.every(Boolean); }
+function ringCount(){
+  return RING_NS.filter(n=>S.data[n] && S.data[n].L!=null && S.data[n].R!=null).length;
+}
+function canGo(k){
+  if(k===1) return true;
+  if(k===2) return prepAll();
+  if(k===3) return prepAll() && ringCount()>=5;
+  if(k===4) return prepAll() && ringCount()>=5 && S.sphero && S.sphero.R;
+  if(k===5) return !!S.lambda;
+  return false;
+}
+function canGoMsg(k){
+  if(k===2) return 'Complete all preparation steps first.';
+  if(k===3) return 'Record both edges of at least 5 rings first.';
+  if(k===4) return 'Measure the radius of curvature with the spherometer first.';
+  if(k===5) return 'Plot the graph and calculate λ first.';
+  return '';
+}
+function goStep(k){
+  if(!canGo(k)){ toast(canGoMsg(k),'err'); return; }
+  $$('.spane').forEach(p=>p.classList.add('hide'));
+  $('#spanel-'+k).classList.remove('hide');
+  $$('#stepper .sdot').forEach((b,i)=>{
+    b.classList.toggle('active', i+1===k);
+    b.classList.toggle('done', i+1<k);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(k===2) requestDraw();
+  if(k===4){ attachGraphEvents(); plotGraph(true); }
+}
+$$('#stepper .sdot').forEach(b=> b.onclick = ()=> goStep(+b.dataset.step));
+
+/* =====================================================================
+   EYEPIECE + OVERVIEW RENDERING
+   ===================================================================== */
+const epCanvas  = $('#epCanvas');
+const miniCanvas= $('#miniCanvas');
+
+function paintRings(ctx, W, H, fieldW, viewCentre, ringCentre, lambda, R){
+  const img = ctx.createImageData(W,H);
+  const d = img.data;
+  const fieldH = fieldW*H/W;
+  const k = Math.PI/(lambda*R);
+  for(let y=0;y<H;y++){
+    const Y = (y-H/2)*fieldH/H;
+    for(let x=0;x<W;x++){
+      const X = viewCentre + (x-W/2)*fieldW/W - ringCentre;
+      const r2 = X*X + Y*Y;
+      const s = Math.sin(k*r2);
+      const I = s*s;
+      const p = (y*W+x)<<2;
+      d[p]   = 255*I;
+      d[p+1] = 214*I;
+      d[p+2] = 92*I;
+      d[p+3] = 255;
+    }
+  }
+  ctx.putImageData(img,0,0);
+}
+
+function drawEyepiece(){
+  const cv = epCanvas, ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const fieldW = 0.16;                       // cm across the eyepiece
+  paintRings(ctx, W, H, fieldW, S.pos, S.C, LAMBDA_TRUE, S.R);
+
+  // crosshair
+  ctx.strokeStyle = 'rgba(255,255,255,.85)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(W/2, 6);   ctx.lineTo(W/2, H/2-18);
+  ctx.moveTo(W/2, H/2+18); ctx.lineTo(W/2, H-6);
+  ctx.moveTo(6, H/2);   ctx.lineTo(W/2-18, H/2);
+  ctx.moveTo(W/2+18, H/2); ctx.lineTo(W-6, H/2);
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,90,110,.9)';
+  ctx.beginPath(); ctx.arc(W/2,H/2,3,0,Math.PI*2); ctx.stroke();
+}
+
+function drawMini(){
+  const cv = miniCanvas, ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
+  const fieldW = 1.0;
+  paintRings(ctx, W, H, fieldW, S.C, S.C, LAMBDA_TRUE, S.R);
+
+  // marker for crosswire
+  const x = (S.pos - (S.C - fieldW/2))/fieldW*W;
+  ctx.strokeStyle = '#35e0c5';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke();
+}
+
+let rafPending = false;
+function requestDraw(){
+  if(rafPending) return;
+  rafPending = true;
+  requestAnimationFrame(()=>{ rafPending=false; drawEyepiece(); drawMini(); });
+}
+
+/* ---------------- crosswire position ---------------- */
+function setPos(p){
+  S.pos = Math.max(0, Math.min(2.5, p));
+  S.pos = r3(S.pos);
+  $('#posSlider').value = Math.round(S.pos*1000);
+  updateReadout();
+  requestDraw();
+}
+function nudge(dp){
+  let p = S.pos + dp;
+  /* snap to nearest ring edge if within 0.0035 cm */
+  for(let n=1; n<=30; n++){
+    const r = ringRadius(n);
+    if(Math.abs(p - (S.C - r)) < 0.0035) p = S.C - r;
+    if(Math.abs(p - (S.C + r)) < 0.0035) p = S.C + r;
+  }
+  setPos(p);
+}
+
+function nearestRing(){
+  let best = null;
+  for(let n=1;n<=30;n++){
+    const r = ringRadius(n);
+    if(!isFinite(r)) continue;
+    [-1,1].forEach(sgn=>{
+      const p = S.C + sgn*r;
+      const dd = Math.abs(S.pos - p);
+      if(!best || dd < best.d) best = {n, side: sgn<0?'left':'right', d: dd, p};
+    });
+  }
+  return best;
+}
+
+function updateReadout(){
+  const v = vernier(S.pos);
+  $('#posReadout').innerHTML =
+    `${S.pos.toFixed(3)} cm <span class="muted small">(MS ${v.ms.toFixed(2)} + ${v.vc}×0.001)</span>`;
+  const nr = nearestRing();
+  let txt = '—';
+  if(nr){
+    txt = `n = ${nr.n} · ${nr.side}`;
+    if(S.assist) txt += nr.d<=TOL ? ' · aligned ✓' : ` · off by ${nr.d.toFixed(3)} cm`;
+  }
+  $('#nearRing').textContent = txt;
+}
+
+/* =====================================================================
+   STEP 2 — CAPTURE READINGS
+   ===================================================================== */
+function renderRingTable(){
+  $('#ringTableBody').innerHTML = RING_NS.map(n=>{
+    const rec = S.data[n] || {};
+    const D = (rec.L!=null && rec.R!=null) ? (rec.R - rec.L) : null;
+    return `<tr>
+      <td class="mono">${n}</td>
+      <td>${cellHTML(rec.L, n, 'L')}</td>
+      <td>${cellHTML(rec.R, n, 'R')}</td>
+      <td class="mono">${D!=null ? D.toFixed(3) : '—'}</td>
+      <td class="mono">${D!=null ? (D*D).toFixed(5) : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+function cellHTML(v, n, side){
+  if(v==null) return `<button class="cap" onclick="capture(${n},'${side}')">capture</button>`;
+  const vn = vernier(v);
+  return `<span class="mono">${v.toFixed(3)}</span>
+          <span class="sub">MS ${vn.ms.toFixed(2)} · VC ${vn.vc}</span>`;
+}
+
+function renderJumpGrid(){
+  const grid = document.getElementById('jumpGrid');
+  if(!grid) return;
+  grid.innerHTML = RING_NS.map(n=>`
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <button class="btn sm" style="padding:5px 0;font-size:.7rem"
+              onclick="jumpToRing(${n},'L')" title="Jump + capture left edge of ring ${n}">${n}←</button>
+      <button class="btn sm" style="padding:5px 0;font-size:.7rem"
+              onclick="jumpToRing(${n},'R')" title="Jump + capture right edge of ring ${n}">→${n}</button>
+    </div>`).join('');
+}
+
+function jumpToRing(n, side){
+  if(!prepAll()){ toast('Complete the preparation steps first.','err'); return; }
+  const r      = ringRadius(n);
+  const jitter = rnd(-0.0012, 0.0012);          // realistic measurement noise
+  const target = (side==='L' ? S.C - r : S.C + r) + jitter;
+  setPos(target);
+  S.data[n] = S.data[n] || {};
+  S.data[n][side] = S.pos;
+  renderRingTable();
+  toast(`Captured ${side==='L'?'left':'right'} edge of ring ${n}: ${S.pos.toFixed(3)} cm`, 'ok');
+}
+
+function autoCompleteRings(){
+  if(!prepAll()){ toast('Complete the preparation steps first.','err'); return; }
+  RING_NS.forEach(n=>{
+    const r = ringRadius(n);
+    S.data[n] = {
+      L: r3(S.C - r + rnd(-0.0012, 0.0012)),
+      R: r3(S.C + r + rnd(-0.0012, 0.0012))
+    };
+  });
+  renderRingTable();
+  toast('All ring readings filled. Proceed to the spherometer.', 'ok');
+}
+
+function clearRings(){
+  S.data = {};
+  renderRingTable();
+  toast('Ring data cleared.','ok');
+}
+
+function capture(n, side){
+  if(!prepAll()){ toast('Complete the preparation steps first.','err'); return; }
+  const r = ringRadius(n);
+  const target = side==='L' ? S.C - r : S.C + r;
+  if(Math.abs(S.pos - target) > TOL){
+    toast(`The crosswire is not on the ${side==='L'?'left':'right'} edge of ring ${n}. Use the fine controls.`,'err');
+    return;
+  }
+  S.data[n] = S.data[n] || {};
+  S.data[n][side] = S.pos;
+  renderRingTable();
+  renderJumpGrid();
+  toast(`Recorded ${side==='L'?'left':'right'} edge of ring ${n}: ${S.pos.toFixed(3)} cm`,'ok');
+}
+
+/* =====================================================================
+   STEP 3 — SPHEROMETER
+   ===================================================================== */
+function takeSphero(where){
+  if(!prepAll()){ toast('Complete the preparation steps first.','err'); return; }
+  S.sphero = S.sphero || { plane:null, curved:null, h:null, R:null };
+
+  const hTrue = S.R - Math.sqrt(S.R*S.R - S.l*S.l/3);
+  const base  = S.spheroBase;
+  const jit   = ()=> rnd(-0.0005,0.0005);
+
+  if(where==='plane'){
+    S.sphero.plane = [0,1,2].map(()=> r3(base + jit()));
+    toast('Three readings taken on the plane glass plate.','ok');
+  }else{
+    S.sphero.curved = [0,1,2].map(()=> r3(base + hTrue + jit()));
+    toast('Three readings taken on the lens surface.','ok');
+  }
+  renderSpheroTable();
+}
+
+function renderSpheroTable(){
+  renderSpheroCalcDetail(); 
+  const body = $('#spheroTableBody');
+  const sp = S.sphero;
+  if(!sp || (!sp.plane && !sp.curved)){
+    body.innerHTML = '<tr><td colspan="7" class="muted">No readings yet.</td></tr>';
+    return;
+  }
+  let rows = '';
+  for(let i=0;i<3;i++){
+    const p = sp.plane  ? spheroParts(sp.plane[i])  : null;
+    const c = sp.curved ? spheroParts(sp.curved[i]) : null;
+    rows += `<tr>
+      <td>${i+1}</td>
+      <td class="mono">${p?p.ms.toFixed(1):'—'}</td>
+      <td class="mono">${p?p.cs:'—'}</td>
+      <td class="mono">${p?p.total.toFixed(3):'—'}</td>
+      <td class="mono">${c?c.ms.toFixed(1):'—'}</td>
+      <td class="mono">${c?c.cs:'—'}</td>
+      <td class="mono">${c?c.total.toFixed(3):'—'}</td>
+    </tr>`;
+  }
+  body.innerHTML = rows;
+}
+
+function renderSpheroCalcDetail(){
+  const sp  = S.sphero;
+  const box = document.getElementById('spheroCalcDetail');
+  if(!box) return;
+
+  if(!sp || !sp.plane){
+    box.innerHTML = '<span class="muted">Take readings on the plane surface first to see the calculation breakdown.</span>';
+    return;
+  }
+
+  const pRaw = sp.plane[0];
+  const pMS  = Math.floor(pRaw/0.1 + 1e-9)*0.1;
+  const pCS  = Math.round((pRaw - pMS)/0.001);
+
+  let html = `
+    <div style="color:var(--acc2);font-weight:700;margin-bottom:8px">
+      Example: Trial 1 on plane surface — total reading = ${pRaw.toFixed(3)} cm
+    </div>
+    <div>• Pitch = 0.1 cm  →  main-scale marks every 0.1 cm</div>
+    <div>• <b>MS</b> = floor(${pRaw.toFixed(3)} / 0.1) × 0.1
+        = floor(${(pRaw/0.1).toFixed(3)}) × 0.1
+        = <b style="color:var(--acc)">${pMS.toFixed(1)} cm</b></div>
+    <div>• Remainder = ${pRaw.toFixed(3)} − ${pMS.toFixed(1)} = ${(pRaw - pMS).toFixed(3)} cm</div>
+    <div>• <b>CS</b> = round(${(pRaw - pMS).toFixed(3)} / 0.001)
+        = round(${((pRaw - pMS)/0.001).toFixed(1)})
+        = <b style="color:var(--acc)">${pCS}</b> divisions</div>
+    <div>• Verify: ${pMS.toFixed(1)} + ${pCS} × 0.001
+        = <b style="color:var(--acc)">${(pMS + pCS*0.001).toFixed(3)} cm</b> ✓</div>
+  `;
+
+  if(sp.curved){
+    const cRaw = sp.curved[0];
+    const cMS  = Math.floor(cRaw/0.1 + 1e-9)*0.1;
+    const cCS  = Math.round((cRaw - cMS)/0.001);
+    html += `
+      <div style="color:var(--acc2);font-weight:700;margin:14px 0 8px">
+        Example: Trial 1 on curved surface — total reading = ${cRaw.toFixed(3)} cm
+      </div>
+      <div>• <b>MS</b> = floor(${cRaw.toFixed(3)} / 0.1) × 0.1
+          = <b style="color:var(--acc)">${cMS.toFixed(1)} cm</b></div>
+      <div>• <b>CS</b> = round((${cRaw.toFixed(3)} − ${cMS.toFixed(1)}) / 0.001)
+          = <b style="color:var(--acc)">${cCS}</b> divisions</div>
+      <div>• Verify: ${cMS.toFixed(1)} + ${cCS} × 0.001
+          = <b style="color:var(--acc)">${(cMS + cCS*0.001).toFixed(3)} cm</b> ✓</div>
+    `;
+  }
+
+  if(sp.plane && sp.curved){
+    const mp = sp.plane.reduce((a,b)=>a+b,0)/3;
+    const mc = sp.curved.reduce((a,b)=>a+b,0)/3;
+    const h  = Math.abs(mc - mp);
+    html += `
+      <div style="color:var(--acc2);font-weight:700;margin:14px 0 8px">
+        Finding h from the mean of 3 trials on each surface
+      </div>
+      <div>• Mean plane reading   = ${mp.toFixed(4)} cm</div>
+      <div>• Mean curved reading  = ${mc.toFixed(4)} cm</div>
+      <div>• <b>h</b> = |curved − plane|
+          = |${mc.toFixed(4)} − ${mp.toFixed(4)}|
+          = <b style="color:var(--acc)">${h.toFixed(4)} cm</b></div>
+    `;
+  }
+
+  box.innerHTML = html;
+}
+
+function computeR(){
+  const sp = S.sphero;
+  if(!sp || !sp.plane || !sp.curved){ toast('Take all three readings on both surfaces first.','err'); return; }
+  const mp = sp.plane.reduce((a,b)=>a+b,0)/3;
+  const mc = sp.curved.reduce((a,b)=>a+b,0)/3;
+  const h  = Math.abs(mc - mp);
+  const R  = (S.l*S.l)/(6*h) + h/2;
+
+  sp.h = h; sp.R = R;
+  S.Rmeas = R;
+
+  $('#spheroResult').innerHTML = `
+    <div class="result">
+      <div class="kv"><span>Mean reading on plane surface</span><b class="mono">${mp.toFixed(3)} cm</b></div>
+      <div class="kv"><span>Mean reading on lens surface</span><b class="mono">${mc.toFixed(3)} cm</b></div>
+      <div class="kv"><span>Sagitta h = |b − a|</span><b class="mono">${h.toFixed(4)} cm</b></div>
+      <div class="kv"><span>Radius of curvature R = l²/(6h) + h/2</span><b class="mono">${R.toFixed(2)} cm</b></div>
+    </div>`;
+  $('#btnStep3Next').disabled = false;
+  toast('Radius of curvature computed: R = '+R.toFixed(2)+' cm','ok');
+}
+
+/* =====================================================================
+   STEP 4 — GRAPH + WAVELENGTH
+   ===================================================================== */
+function niceStep(range, targetTicks){
+  if(range <= 0) return 1;
+  const rough = range / targetTicks;
+  const mag   = Math.pow(10, Math.floor(Math.log10(rough)));
+  const norm  = rough / mag;
+  let step;
+  if(norm < 1.5)      step = 1;
+  else if(norm < 3)   step = 2;
+  else if(norm < 7)   step = 5;
+  else                step = 10;
+  return step * mag;
+}
+function fmtTick(v, step){
+  const d = Math.max(0, -Math.floor(Math.log10(step)));
+  return v.toFixed(d);
+}
+function graphZoom(f){
+  if(!S.fit || !S.graphView) return;
+  const v  = S.graphView;
+  const cx = (v.xMin + v.xMax) / 2;
+  const cy = (v.yMin + v.yMax) / 2;
+  S.graphView = {
+    xMin: cx - (cx - v.xMin) * f,
+    xMax: cx + (v.xMax - cx) * f,
+    yMin: cy - (cy - v.yMin) * f,
+    yMax: cy + (v.yMax - cy) * f
+  };
+  plotGraph(true);
+}
+
+function graphReset(){
+  S.graphView  = null;
+  S.graphHover = null;
+  plotGraph(true);
+  toast('Graph view reset.', 'ok');
+}
+function attachGraphEvents(){
+  const cv = $('#graphCanvas');
+  if(!cv || cv._attached) return;
+  cv._attached = true;
+  cv.style.cursor = 'grab';
+
+  let dragging = false, dragStart = null;
+
+  const rectToData = (e)=>{
+    const r = cv.getBoundingClientRect();
+    const px = (e.clientX - r.left) * (640 / r.width);
+    const py = (e.clientY - r.top ) * (440 / r.height);
+    const m  = {l:78, r:26, t:26, b:60};
+    const pw = 640-m.l-m.r, ph = 440-m.t-m.b;
+    const v  = S.graphView;
+    return {
+      px, py, m, pw, ph, v,
+      xData: v.xMin + ((px-m.l)/pw)*(v.xMax-v.xMin),
+      yData: v.yMin + ((m.t+ph-py)/ph)*(v.yMax-v.yMin)
+    };
+  };
+
+  cv.addEventListener('wheel', e=>{
+    if(!S.fit || !S.graphView) return;
+    e.preventDefault();
+
+    const {xData, yData, v} = rectToData(e);
+
+    /* --- normalise deltaY across devices --- */
+    let dy = e.deltaY;
+    if(e.deltaMode === 1) dy *= 16;         // line mode → pixels
+    else if(e.deltaMode === 2) dy *= 100;   // page mode → pixels
+    dy = Math.max(-120, Math.min(120, dy)); // cap per event so a hard flick doesn't jump
+
+    /* --- proportional zoom: small scrolls = tiny zoom --- */
+    const f = Math.pow(1 + GRAPH_ZOOM_SPEED, dy);
+
+    /* --- clamp zoom range so you can't lose the data --- */
+    const nX = v.xMax - v.xMin;
+    const nY = v.yMax - v.yMin;
+    if(nX * f < 1     || nX * f > 200) return;   // 1..200 units on x (n)
+    if(nY * f < 1e-4  || nY * f > 5)   return;   // 0.0001..5 cm² on y
+
+    S.graphView = {
+      xMin: xData - (xData - v.xMin)*f,
+      xMax: xData + (v.xMax - xData)*f,
+      yMin: yData - (yData - v.yMin)*f,
+      yMax: yData + (v.yMax - yData)*f
+    };
+    plotGraph(true);
+  }, {passive:false});
+
+  cv.addEventListener('mousedown', e=>{
+    if(!S.fit) return;
+    dragging  = true;
+    dragStart = { x:e.clientX, y:e.clientY, v:{...S.graphView} };
+    cv.style.cursor = 'grabbing';
+  });
+
+  cv.addEventListener('mousemove', e=>{
+    if(!S.fit || !S.graphView) return;
+    const {px, py, m, pw, ph, v} = rectToData(e);
+
+    let nearest = null, bestD = Infinity;
+    S.fit.pts.forEach(p=>{
+      const ppx = m.l + ((p.x-v.xMin)/(v.xMax-v.xMin))*pw;
+      const ppy = m.t + ph - ((p.y-v.yMin)/(v.yMax-v.yMin))*ph;
+      const d = Math.hypot(ppx-px, ppy-py);
+      if(d < 18 && d < bestD){ bestD = d; nearest = p; }
+    });
+    S.graphHover = nearest;
+
+    if(dragging && dragStart){
+      const dx = (e.clientX - dragStart.x) * (dragStart.v.xMax - dragStart.v.xMin) / pw;
+      const dy = (e.clientY - dragStart.y) * (dragStart.v.yMax - dragStart.v.yMin) / ph;
+      S.graphView = {
+        xMin: dragStart.v.xMin - dx,
+        xMax: dragStart.v.xMax - dx,
+        yMin: dragStart.v.yMin + dy,
+        yMax: dragStart.v.yMax + dy
+      };
+    }
+    plotGraph(true);
+  });
+
+  cv.addEventListener('mouseup',    ()=>{ dragging=false; cv.style.cursor='grab'; });
+  cv.addEventListener('mouseleave', ()=>{ dragging=false; S.graphHover=null; cv.style.cursor='grab'; plotGraph(true); });
+  cv.addEventListener('dblclick',   ()=>{
+    S.graphView  = null;
+    S.graphHover = null;
+    plotGraph(true);
+    toast('Graph view reset.','ok');
+  });
+}
+
+   function plotGraph(silent){
+  const pts = RING_NS
+    .filter(n=>S.data[n] && S.data[n].L!=null && S.data[n].R!=null)
+    .map(n=>({ x:n, y: Math.pow(S.data[n].R - S.data[n].L, 2) }));
+
+  const cv  = $('#graphCanvas');
+  const ctx = cv.getContext('2d');
+  const W   = 640, H = 440;               // logical plotting size
+  if(cv.width!==W){ cv.width=W; cv.height=H; }
+
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle = '#0a1224'; ctx.fillRect(0,0,W,H);
+
+  if(pts.length < 4){
+    ctx.fillStyle = '#8fa0c2'; ctx.font = '16px system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('Record at least 4 rings to plot the graph', W/2, H/2);
+    if(!silent) toast('Record both edges of at least 4 rings first.','err');
+    return null;
+  }
+
+  /* ---- least-squares fit ---- */
+  const N = pts.length;
+  let sx=0, sy=0, sxx=0, sxy=0, syy=0;
+  pts.forEach(p=>{ sx+=p.x; sy+=p.y; sxx+=p.x*p.x; sxy+=p.x*p.y; syy+=p.y*p.y; });
+  const slope = (N*sxy - sx*sy)/(N*sxx - sx*sx);
+  const inter = (sy - slope*sx)/N;
+  const denom = Math.sqrt((N*sxx - sx*sx)*(N*syy - sy*sy));
+  const r2    = denom ? (N*sxy - sx*sy)/denom : 0;
+  S.fit = { slope, inter, r2, pts };
+
+  /* ---- view (auto-fit unless user has zoomed) ---- */
+  if(!S.graphView){
+    S.graphView = {
+      xMin: 0,
+      xMax: Math.max(21, ...pts.map(p=>p.x)) * 1.05,
+      yMin: 0,
+      yMax: Math.max(...pts.map(p=>p.y)) * 1.15
+    };
+  }
+  const {xMin, xMax, yMin, yMax} = S.graphView;
+
+  const m  = {l:78, r:26, t:26, b:60};
+  const pw = W-m.l-m.r, ph = H-m.t-m.b;
+  const X  = n => m.l + ((n-xMin)/(xMax-xMin))*pw;
+  const Y  = y => m.t + ph - ((y-yMin)/(yMax-yMin))*ph;
+
+  /* ---- nice-number ticks ---- */
+  const stepX = niceStep(xMax-xMin, 10);
+  const stepY = niceStep(yMax-yMin, 6);
+
+  ctx.strokeStyle = '#1a2540';
+  ctx.fillStyle   = '#8fa0c2';
+  ctx.font        = '12px system-ui';
+
+  ctx.textAlign = 'right';
+  for(let v=Math.ceil(yMin/stepY)*stepY; v<=yMax+1e-9; v+=stepY){
+    const py = Y(v);
+    ctx.beginPath(); ctx.moveTo(m.l, py); ctx.lineTo(W-m.r, py); ctx.stroke();
+    ctx.fillText(fmtTick(v, stepY), m.l-9, py+4);
+  }
+
+  ctx.textAlign = 'center';
+  for(let v=Math.ceil(xMin/stepX)*stepX; v<=xMax+1e-9; v+=stepX){
+    const px = X(v);
+    ctx.beginPath(); ctx.moveTo(px, m.t); ctx.lineTo(px, m.t+ph); ctx.stroke();
+    ctx.fillText(fmtTick(v, stepX), px, m.t+ph+20);
+  }
+
+  /* ---- axes ---- */
+  ctx.strokeStyle = '#4a6ea0'; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  ctx.moveTo(m.l, m.t);     ctx.lineTo(m.l, m.t+ph);
+  ctx.moveTo(m.l, m.t+ph);  ctx.lineTo(W-m.r, m.t+ph);
+  ctx.stroke();
+
+  /* ---- fit line ---- */
+  ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(X(xMin), Y(slope*xMin+inter));
+  ctx.lineTo(X(xMax), Y(slope*xMax+inter));
+  ctx.stroke();
+
+  /* ---- points ---- */
+  const visible = pts.filter(p=> p.x>=xMin && p.x<=xMax && p.y>=yMin && p.y<=yMax);
+  pts.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(X(p.x), Y(p.y), 5, 0, Math.PI*2);
+    ctx.fillStyle = '#35e0c5'; ctx.fill();
+    ctx.strokeStyle = '#04120f'; ctx.lineWidth = 1.5; ctx.stroke();
+  });
+
+  /* ---- small permanent value labels when zoomed & uncluttered ---- */
+  if(visible.length <= 10 && pw/Math.max(1,visible.length) > 45){
+    ctx.font = '10px ui-monospace, monospace';
+    ctx.fillStyle = '#a5b5d5';
+    ctx.textAlign = 'left';
+    visible.forEach(p=> ctx.fillText(p.y.toFixed(4), X(p.x)+8, Y(p.y)-8));
+  }
+
+  /* ---- hover tooltip ---- */
+  if(S.graphHover){
+    const p = S.graphHover;
+    const txt = `n = ${p.x}   ·   D² = ${p.y.toFixed(5)} cm²`;
+    ctx.font = 'bold 12px system-ui';
+    const tw = ctx.measureText(txt).width + 18;
+    let tx = X(p.x) + 12;
+    let ty = Y(p.y) - 30;
+    if(tx + tw > W-m.r) tx = X(p.x) - tw - 12;
+    if(ty < m.t)        ty = Y(p.y) + 14;
+    ctx.fillStyle = 'rgba(15,23,48,.96)';
+    ctx.strokeStyle = '#35e0c5'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(tx+6, ty); ctx.lineTo(tx+tw-6, ty);
+    ctx.quadraticCurveTo(tx+tw, ty, tx+tw, ty+6);
+    ctx.lineTo(tx+tw, ty+18); ctx.quadraticCurveTo(tx+tw, ty+24, tx+tw-6, ty+24);
+    ctx.lineTo(tx+6, ty+24); ctx.quadraticCurveTo(tx, ty+24, tx, ty+18);
+    ctx.lineTo(tx, ty+6); ctx.quadraticCurveTo(tx, ty, tx+6, ty);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#e6ecfb'; ctx.textAlign='left';
+    ctx.fillText(txt, tx+9, ty+16);
+  }
+
+  /* ---- labels + hint ---- */
+  ctx.fillStyle = '#e6ecfb'; ctx.font = 'bold 13px system-ui';
+  ctx.textAlign = 'left';  ctx.fillText('D² (cm²)',   14, 20);
+  ctx.textAlign = 'right'; ctx.fillText('ring order n', W-16, H-18);
+
+  ctx.fillStyle = '#5a6a8a'; ctx.font = '11px system-ui';
+  ctx.textAlign = 'left';
+  ctx.fillText('Scroll to zoom · drag to pan · double-click to reset', m.l, H-12);
+
+  return S.fit;
+}
+   
+
+function calculate(){
+  const fit = plotGraph(false);
+  if(!fit) return;
+  if(!S.Rmeas){ toast('Measure R with the spherometer first.','err'); return; }
+
+  const lambda = fit.slope/(4*S.Rmeas);        // cm
+  S.lambda = lambda;
+
+  /* maximum probable error */
+  const sp = S.sphero;
+  const dR_R = (2*0.01/S.l) + (2*0.0005/sp.h);
+  const d20 = S.data[20] ? (S.data[20].R - S.data[20].L) : null;
+  const d4  = S.data[4]  ? (S.data[4].R  - S.data[4].L ) : null;
+  let dLamRel = dR_R;
+  if(d20 && d4){
+    dLamRel += (2*(d20 + d4)*0.001)/(d20*d20 - d4*d4);
+  }
+  const dLam = Math.abs(lambda*dLamRel)*1e8;   // Å
+  S.dLam = dLam;
+
+  const lamA = lambda*1e8;
+  const errPct = Math.abs(lamA - STD_LAMBDA)/STD_LAMBDA*100;
+
+  $('#calcOut').innerHTML = `
+    <div class="result">
+      <div class="kv"><span>Slope of D² vs n</span><b class="mono">${fit.slope.toFixed(5)} cm²</b></div>
+      <div class="kv"><span>Fit quality R²</span><b class="mono">${fit.r2.toFixed(4)}</b></div>
+      <div class="kv"><span>Measured radius R</span><b class="mono">${S.Rmeas.toFixed(2)} cm</b></div>
+      <div class="kv"><span>λ = slope / (4R)</span><b class="mono">${lamA.toFixed(0)} Å</b></div>
+      <div class="kv"><span>Maximum probable error Δλ</span><b class="mono">± ${dLam.toFixed(0)} Å</b></div>
+      <div class="kv"><span>Standard value</span><b class="mono">5893 Å</b></div>
+      <div class="kv"><span>Percentage error</span><b class="mono">${errPct.toFixed(2)} %</b></div>
+      <div style="margin-top:14px">
+        <div class="muted small">Measured wavelength</div>
+        <div class="big">λ = ${lamA.toFixed(0)} ± ${dLam.toFixed(0)} Å</div>
+      </div>
+    </div>`;
+  $('#btnStep4Next').disabled = false;
+
+  if(errPct > 10){
+    toast('Your λ is far from 5893 Å — re-check the spherometer readings and ring alignment.','err');
+  }
+
+  toast('Wavelength calculated from your own readings.','ok');
+}
+
+/* =====================================================================
+   STEP 5 — REPORT
+   ===================================================================== */
+function closeReport(){
+  const overlay = document.getElementById('reportOverlay');
+  if(!overlay) return;
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    overlay.style.opacity = '';
+    document.body.style.overflow = '';
+  }, 300);
+}
+
+// Close report when pressing Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('reportOverlay');
+    if (overlay && overlay.classList.contains('show')) {
+      closeReport();
+    }
+  }
+});   
+function buildReport(){
+  if(!S.lambda){ toast('Calculate λ first.','err'); return; }
+
+  const name  = $('#stName').value.trim() || '—';
+  const roll  = $('#stRoll').value.trim() || '—';
+  const date  = $('#stDate').value || new Date().toISOString().slice(0,10);
+
+  const lamA = S.lambda*1e8;
+  const errPct = Math.abs(lamA-STD_LAMBDA)/STD_LAMBDA*100;
+  const r2 = S.fit.r2.toFixed(4);
+  const slope = S.fit.slope.toFixed(5);
+
+  // Build ring table rows
+  const ringRows = RING_NS.map(n=>{
+    const rec = S.data[n];
+    if(!rec || rec.L==null || rec.R==null) return '';
+    const a = vernier(rec.L), b = vernier(rec.R);
+    const D = rec.R - rec.L;
+    return `<tr>
+      <td>${n}</td>
+      <td>${a.ms.toFixed(2)}</td><td>${a.vc}</td><td>${a.total.toFixed(3)}</td>
+      <td>${b.ms.toFixed(2)}</td><td>${b.vc}</td><td>${b.total.toFixed(3)}</td>
+      <td>${D.toFixed(3)}</td><td>${(D*D).toFixed(5)}</td>
+    </tr>`;
+  }).join('');
+
+  // Build spherometer table rows
+  const sp = S.sphero;
+  let spRows = '';
+  for(let i=0;i<sp.plane.length;i++){
+    const p = spheroParts(sp.plane[i]), c = spheroParts(sp.curved[i]);
+    const h = Math.abs(sp.curved[i] - sp.plane[i]);
+    spRows += `<tr>
+      <td>${i+1}</td>
+      <td>${p.ms.toFixed(1)}</td><td>${p.cs}</td><td>${p.total.toFixed(3)}</td>
+      <td>${c.ms.toFixed(1)}</td><td>${c.cs}</td><td>${c.total.toFixed(3)}</td>
+      <td>${h.toFixed(4)}</td>
+    </tr>`;
+  }
+
+  const graphImg = $('#graphCanvas').toDataURL('image/png');
+
+  // The actual HTML structure
+  $('#reportBody').innerHTML = `
+    <h1>DEPARTMENT OF PHYSICS & MATERIALS SCIENCE AND ENGINEERING</h1>
+    <div class="subh">Jaypee Institute of Information Technology (JIIT) · Physics Laboratory-1 (15B17PH171)</div>
+
+    <h1 style="font-size:22px;margin-top:20px;border:none;">Wavelength of Sodium Light via Newton's Rings</h1>
+    
+    <div class="meta">
+      <div><b>Name:</b> ${name}</div>
+      <div><b>Enrollment No:</b> ${roll}</div>
+      <div><b>Date:</b> ${date}</div>
+      <div><b>Batch / Branch:</b> F-10 / CSE</div>
+    </div>
+
+    <div class="abstract">
+      <b>ABSTRACT —</b> Newton's rings are concentric circular interference fringes formed in a thin wedge-shaped air film enclosed between a plano-convex lens and a plane glass plate. In this investigation, the mean wavelength of sodium light is determined by measuring the diameters of six alternate dark fringes using a travelling microscope (LC = 0.001 cm), and the lens radius via a spherometer. Linear regression of \(D_n^2\) vs \(n\) yields a slope of ${slope} cm²/ring (\(r^2\) = ${r2}), resulting in an experimental wavelength of \(\lambda\) = (${lamA.toFixed(0)} ± ${S.dLam.toFixed(0)}) Å, within ${errPct.toFixed(2)}% of the standard value of 5893 Å.
+    </div>
+
+    <h2>1. Objective & Apparatus</h2>
+    <p><b>Objective:</b> To determine the mean wavelength of sodium light using Newton's rings and to evaluate the radius of curvature of the plano-convex lens.</p>
+    <p><b>Apparatus:</b> Plano-convex lens, optically flat glass plate, sodium vapour lamp, travelling microscope, spherometer, and 45° inclined glass plate.</p>
+
+    <h2>2. Theory Summary</h2>
+    <p class="eq">For dark rings: \(D_n^2 = 4n\lambda R\)</p>
+    <p class="eq">Radius of curvature: \(R = \frac{l^2}{6h} + \frac{h}{2}\)</p>
+    <p class="eq">Wavelength: \(\lambda = \frac{\text{Slope}}{4R}\)</p>
+
+    <h2>3. Observations & Data Tables</h2>
+    <p><b>Instrument Constants:</b> Microscope LC = 0.001 cm · Spherometer LC = 0.001 cm · Leg separation \(l\) = ${S.l.toFixed(2)} cm</p>
+
+    <p><b>Table 1: Diameters of Dark Newton's Rings</b></p>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Ring n</th>
+          <th colspan="3">Left Side (a)</th>
+          <th colspan="3">Right Side (b)</th>
+          <th rowspan="2">D (cm)</th>
+          <th rowspan="2">D² (cm²)</th>
+        </tr>
+        <tr><th>MS</th><th>VS</th><th>Total</th><th>MS</th><th>VS</th><th>Total</th></tr>
+      </thead>
+      <tbody>${ringRows}</tbody>
+    </table>
+
+    <p><b>Table 2: Spherometer Readings</b></p>
+    <table>
+      <thead>
+        <tr>
+          <th rowspan="2">Trial</th>
+          <th colspan="3">Plane Surface</th>
+          <th colspan="3">Curved Surface</th>
+          <th rowspan="2">h = b − a (cm)</th>
+        </tr>
+        <tr><th>MS</th><th>CS</th><th>Total</th><th>MS</th><th>CS</th><th>Total</th></tr>
+      </thead>
+      <tbody>${spRows}</tbody>
+    </table>
+    <p style="text-align:center;font-weight:bold;margin-top:8px;">Mean Sagitta Height h = ${sp.h.toFixed(4)} cm &nbsp; | &nbsp; Computed Radius R = ${sp.R.toFixed(2)} cm</p>
+
+    <h2>4. Graph & Calculation</h2>
+    <img src="${graphImg}" style="width:100%;max-width:580px;border:1px solid #cbd5e1;border-radius:8px;display:block;margin:10px auto;" />
+    <p style="text-align:center;font-size:13px;color:#64748b;">Graph of \(D_n^2\) vs Ring Order n</p>
+
+    <h2>5. Result</h2>
+    <div class="res-box">
+      <div style="font-size:14px;color:#475569;text-transform:uppercase;letter-spacing:1px;">Measured Wavelength of Sodium Light</div>
+      <div class="big">λ = ${lamA.toFixed(0)} ± ${S.dLam.toFixed(0)} Å</div>
+      <div class="err">Standard value = 5893 Å &nbsp;·&nbsp; Percentage error = ${errPct.toFixed(2)}%</div>
+    </div>
+
+    <h2>6. Precautions & Sources of Error</h2>
+    <ul style="font-size:13px;line-height:1.8;color:#334155;">
+      <li>Both the lens and glass plate must be wiped clean; trapped dust introduces a finite air gap at the vertex, shifting the y-intercept.</li>
+      <li>The microscope screw must be rotated strictly in one direction to eliminate backlash error.</li>
+      <li>Spherometer uncertainty (0.001 cm) dominates the error budget (7.55% out of 9.55%) because h is very small (~0.0265 cm).</li>
+      <li>The cross-wire must be aligned tangentially to the same boundary of each fringe.</li>
+    </ul>
+
+    <h2>7. References</h2>
+    <ol style="font-size:12px;color:#475569;line-height:1.7;">
+      <li>Physics Laboratory-1 (15B17PH171) Manual, JIIT Noida, Experiment 1: Newton's Ring.</li>
+      <li>E. Hecht, <i>Optics</i>, 5th ed., Pearson, 2017, ch. 9.</li>
+      <li>M. Born and E. Wolf, <i>Principles of Optics</i>, 7th ed., Cambridge, 1999.</li>
+      <li>F. A. Jenkins and H. E. White, <i>Fundamentals of Optics</i>, 4th ed., McGraw-Hill, 1976.</li>
+    </ol>
+  `;
+
+  $('#reportOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  // Trigger confetti if you have that animation active
+  if(window.fireConfetti) window.fireConfetti(); 
+}
+
+/* =====================================================================
+   SANDBOX DEMO
+   ===================================================================== */
+function drawDemo(){
+  const lamA = +$('#dLambda').value;
+  const R    = +$('#dR').value;
+  const lam  = lamA*1e-8;                     // Å → cm
+
+  $('#dLambdaVal').textContent = lamA + ' Å';
+  $('#dRVal').textContent = R + ' cm';
+
+  const cv = $('#demoCanvas'), ctx = cv.getContext('2d');
+  const fieldW = 0.85;
+  paintRings(ctx, cv.width, cv.height, fieldW, fieldW/2, fieldW/2, lam, R);
+
+  const n = 10;
+  const D = 2*Math.sqrt(n*lam*R);             // cm
+  $('#demoInfo').textContent =
+    `For n = 10:  D = ${(D*10).toFixed(2)} mm   ·   D² = ${(D*D).toFixed(5)} cm²`;
+}
+
+/* =====================================================================
+   QUIZ
+   ===================================================================== */
+const QUIZ = [
+  { q:'Why is the centre of the Newton\'s rings pattern dark?',
+    o:['Because no light reaches the centre',
+       'Because of the extra λ/2 path difference from reflection at the denser medium',
+       'Because the lens absorbs light at the contact point',
+       'Because the rings are circular'],
+    a:1 },
+  { q:'The fringes in Newton\'s rings are circular because:',
+    o:['The lens is circular',
+       'The air film thickness is constant along circles centred at the contact point',
+       'The light source is circular',
+       'Of diffraction at the lens edge'],
+    a:1 },
+  { q:'If the air film is replaced by water (µ = 1.33), the ring diameters will:',
+    o:['Increase', 'Decrease', 'Stay the same', 'Become straight lines'],
+    a:1 },
+  { q:'In the graph of D² against ring order n, the slope equals:',
+    o:['λR', '2λR', '4λR', 'λ/(4R)'],
+    a:2 },
+  { q:'A sodium lamp is preferred in this experiment because it is:',
+    o:['Very bright', 'Monochromatic', 'Cheap', 'Polarised'],
+    a:1 }
+];
+
+function renderQuiz(){
+  $('#quizBox').innerHTML = QUIZ.map((q,i)=>`
+    <div class="card q" data-q="${i}">
+      <h4>${i+1}. ${q.q}</h4>
+      ${q.o.map((o,j)=>`<label class="opt" data-o="${j}" onclick="pick(${i},${j})">${o}</label>`).join('')}
+    </div>`).join('');
+}
+function pick(i,j){
+  const card = $(`#quizBox .q[data-q="${i}"]`);
+  $$('.opt', card).forEach(o=>o.classList.remove('sel'));
+  $(`.opt[data-o="${j}"]`, card).classList.add('sel');
+  card.dataset.picked = j;
+}
+function checkQuiz(){
+  let score = 0;
+  QUIZ.forEach((q,i)=>{
+    const card = $(`#quizBox .q[data-q="${i}"]`);
+    const picked = card.dataset.picked;
+    $$('.opt', card).forEach(o=>o.classList.remove('correct','wrong'));
+    $(`.opt[data-o="${q.a}"]`, card).classList.add('correct');
+    if(picked!=null && +picked===q.a) score++;
+    else if(picked!=null) $(`.opt[data-o="${picked}"]`, card).classList.add('wrong');
+  });
+  $('#quizScore').textContent = `Score: ${score} / ${QUIZ.length}`;
+}
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+renderQuiz();
+initLab();
+$('#stDate').value = new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
